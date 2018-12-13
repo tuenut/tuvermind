@@ -1,2 +1,5 @@
 django
 uwsgi
+wget
+certifi
+pycurl
