@@ -6,8 +6,8 @@ from io import BytesIO
 
 
 class CurlGetter:
-    def __init__(self, url, logger=None, proxies=None):
-        self.url = url
+    def __init__(self, logger=None, proxies=None):
+        self.url = None
         self.logger = logger if logger else self.__get_logger
 
         self.__set_proxies(proxies)
@@ -96,7 +96,8 @@ class CurlGetter:
 
         return False
 
-    def get(self, ):
+    def get(self, url):
+        self.url = url
         self.__init_curl()
         try:
             self.__curl.perform()

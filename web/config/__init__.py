@@ -1,3 +1,7 @@
 from web.config.locals import BASE_DIR, DATABASES, SECRET_KEY
+from web.config.celery import *
 
-__all__ = ['BASE_DIR', 'DATABASES', 'SECRET_KEY']
+__all__ = ['BASE_DIR', 'DATABASES', 'SECRET_KEY', 'CELERY_TIMEZONE',
+           'CELERY_TASK_SIRIALIZER', 'CELERY_RESULT_SERIALIZER',
+           'CELERY_ENABLE_UTC', 'CELERY_BROKER_URL', 'CELERY_BEAT_SCHEDULE',
+           'CELERY_ACCEPT_CONTENT', 'CELERY_IMPORTS']

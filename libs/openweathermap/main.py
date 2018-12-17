@@ -1,50 +1,48 @@
 import wget
 
-
 from datetime import datetime as dt
 from json import loads
-from libs.weather.config import (ICONS, OPENWAETHERMAP_URL, ICONS_PATH,
-                                 MAX_WIDTH, ICON_WIDTH, SYMBOL_H, SYMBOL_W,
-                                 ALIGN, HOURS_TO_DISPLAY,)
+from django.utils import timezone
 
+from libs.openweathermap.config import (ICONS, OPENWAETHERMAP_URL, ICONS_PATH,
+                                        MAX_WIDTH, ICON_WIDTH, SYMBOL_H, SYMBOL_W,
+                                        ALIGN, HOURS_TO_DISPLAY, )
+from libs.utils.network import CurlGetter
+from web.apps.openweathermap.models import OWMCityes, OWMData, OWMWeather
 
 def get_icons():
     for icon in ICONS:
         wget.download(OPENWAETHERMAP_URL+icon, out=ICONS_PATH+icon)
 
+def get_weather():
+    getter = CurlGetter()
+    getter.get(OPENWAETHERMAP_URL)
+    data = loads(getter.response)
+    mapper(data)
 
-class ParseWeatherData:
-    pass
+def mapper(data):
+    city = OWMCityes.objects.get(owm_id=data['city']['id'])
 
-    def __init__(self):
-        self.weather_data = {}
-        self.conky_text = ''
+    for item in data['list']:
+        instance, created = OWMWeather.objects.get_or_create(
+            timestamp=dt.utcfromtimestamp(item['dt']),
+            city=city
+        )
+        if not created:
+            instance.updated = timezone.now()
 
-    def parse(self, curl_json_response):
-        weather_data = loads(curl_json_response)
-        self.weather_data = {}
-        for item in weather_data['list']:
-            date = dt.utcfromtimestamp(item['dt'])
-            temp = round(item['main']['temp'] - 273.0, 2)  # C
-            pressure = item['main']['pressure']  # hPa
-            humidity = item['main']['humidity']  # %
-            cloudiness = item['clouds']['all']  # %
-            weather = list(item['weather'][0].values())
-            wind = item['wind']
-            by_time = {
-                date.strftime('%H:%M'): {
-                    'temp': temp,
-                    'pressure': pressure,
-                    'humidity': humidity,
-                    'cloudiness': cloudiness,
-                    'weather': weather,
-                    'wind': wind
-                }
-            }
-            try:
-                self.weather_data[date.date()].update(by_time)
-            except KeyError:
-                self.weather_data[date.date()] = by_time
+        instance.temperature = item['main']['temp']
+        instance.temperature_min = item['main']['temp_min']
+        instance.temperature_max = item['main']['temp_max']
+        instance.pressure = item['main']['pressure']
+        instance.humidity = item['main']['humidity']
+        instance.weather = OWMWeather.objects.get(owm_id=item['weather']['id'])
+        instance.clouds = item['clouds']['all']
+        instance.wind_speed = item['wind']['speed']
+        instance.wind_deg = item['wind']['deg']
+        instance.snow_3h = item['snow']['3h'] if '3h' in item['snow'].keys() else None
+        instance.rain_3h = item['rain']['3h'] if '3h' in item['rain'].keys() else None
+
 
 
 class ProcessWeatherData:
@@ -103,7 +101,7 @@ class ProcessWeatherData:
             ])
             images = ''.join([
                 self.IMG_PATTERN.format(
-                    img=days[day][hour]['weather'][-1],
+                    img=days[day][hour]['openweathermap'][-1],
                     x=40 + ALIGN * SYMBOL_W * (sorted_hours.index(hour)),
                     y=26 + (SYMBOL_H * 4 + 24) * (sorted_days.index(day)),
                 )

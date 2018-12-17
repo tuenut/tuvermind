@@ -5,7 +5,7 @@ from web.config import *
 
 
 DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -13,10 +13,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
 
     'web',
     'web.apps',
-    'web.apps.weather',
+    'web.apps.openweathermap',
 
 ]
 MIDDLEWARE = [
@@ -69,6 +70,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 LOG_LEVEL = logging.DEBUG
+LOG_DIR = os.path.join(BASE_DIR, '.logs')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

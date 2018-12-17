@@ -5,9 +5,9 @@ from django.db.models import (CASCADE, DO_NOTHING, SET_DEFAULT, SET_NULL,
                               NullBooleanField, OneToOneField,
                               PositiveIntegerField, TextField, FloatField)
 
-class Data(Model):
+class OWMData(Model):
     timestamp = DateTimeField(null=True, default=None)
-    city = ForeignKey('Cityes', null=True, default=None,
+    city = ForeignKey('OWMCityes', null=True, default=None,
                       related_query_name='data2city', related_name='data2city',
                       on_delete=DO_NOTHING)
     temperature = FloatField()
@@ -15,7 +15,7 @@ class Data(Model):
     temperature_max = FloatField()
     pressure = FloatField()
     humidity = FloatField()
-    weather = ForeignKey('Weather', null=True, default=None,
+    weather = ForeignKey('OWMWeather', null=True, default=None,
                          related_query_name='data2weather',
                          related_name='data2weather', on_delete=DO_NOTHING)
     clouds = FloatField()
@@ -24,8 +24,10 @@ class Data(Model):
     snow_3h = FloatField()
     rain_3h = FloatField()
 
+    updated = DateTimeField(null=True, default=None)
 
-class Cityes(Model):
+
+class OWMCityes(Model):
     owm_id = IntegerField(null=False, unique=True)
     name = CharField(null=True, default=None, max_length=128)
     longitude = FloatField(null=True, default=None)
@@ -33,7 +35,7 @@ class Cityes(Model):
     country = CharField(null=True, default=None, max_length=128)
 
 
-class Weather(Model):
+class OWMWeather(Model):
     owm_id = IntegerField(null=False, unique=True)
     name = CharField(null=True, default=None, max_length=64)
     description = CharField(null=True, default=None, max_length=128)

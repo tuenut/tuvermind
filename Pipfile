@@ -9,6 +9,9 @@ certifi = "*"
 pycurl = "*"
 Django = "*"
 uWSGI = "*"
+django_celery_beat = "*"
+celery = "*"
+redis = "*"
 
 [requires]
 python_version = "3.6"
