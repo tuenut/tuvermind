@@ -6,6 +6,8 @@ from io import BytesIO
 
 
 class CurlGetter:
+    logger = None
+
     def __init__(self, logger=None, proxies=None):
         self.url = None
         self.logger = logger if logger else self.__get_logger
@@ -15,12 +17,13 @@ class CurlGetter:
     @property
     def __get_logger(self, ):
         if not self.logger:
-            logger = logging.getLogger()
+            logger = logging.getLogger(__name__ + self.__class__.__name__)
             logger.setLevel(level=logging.DEBUG)
-            hndlr = logging.StreamHandler()
-            logger.addHandler(hndlr)
-
+            if not logger.handlers:
+                hndlr = logging.StreamHandler()
+                logger.addHandler(hndlr)
             return logger
+
         else:
             return self.logger
 
@@ -39,8 +42,11 @@ class CurlGetter:
     @staticmethod
     def __logger_wrapper(func):
         def wrapper(debug_type, debug_msg, ):
-            func("pycurl_debug(%d): %s" % (
-            debug_type, debug_msg.decode('utf8').strip('\n')))
+            try:
+                func("pycurl_debug(%d): %s" % (
+                debug_type, debug_msg.decode('utf8').strip('\n')))
+            except:
+                pass
 
         return wrapper
 
@@ -56,7 +62,7 @@ class CurlGetter:
                            0 if err_code == 60 else 1)
 
         for proxy in self.__proxies:
-            #TODO make it not like shitty code
+            # TODO make it not like shitty code
             if self.__proxy_perform(proxy, err_code):
                 return True
 
@@ -96,7 +102,7 @@ class CurlGetter:
 
         return False
 
-    def get(self, url):
+    def get_raw(self, url):
         self.url = url
         self.__init_curl()
         try:
@@ -106,5 +112,9 @@ class CurlGetter:
             if self.__proxies:
                 self.__use_proxy()
         self.__curl.close()
-        self.response = self.buffer.getvalue().decode('utf-8')
+        self.response = self.buffer.getvalue()
         self.buffer.close()
+
+    def get(self, url):
+        self.get_raw(url)
+        self.response = self.response.decode('utf-8')

@@ -7,7 +7,7 @@ from django.db.models import (CASCADE, DO_NOTHING, SET_DEFAULT, SET_NULL,
 
 class OWMData(Model):
     timestamp = DateTimeField(null=True, default=None)
-    city = ForeignKey('OWMCityes', null=True, default=None,
+    city = ForeignKey('OWMCities', null=True, default=None,
                       related_query_name='data2city', related_name='data2city',
                       on_delete=DO_NOTHING)
     temperature = FloatField()
@@ -27,16 +27,16 @@ class OWMData(Model):
     updated = DateTimeField(null=True, default=None)
 
 
-class OWMCityes(Model):
+class OWMCities(Model):
     owm_id = IntegerField(null=False, unique=True)
     name = CharField(null=True, default=None, max_length=128)
     longitude = FloatField(null=True, default=None)
     latitude = FloatField(null=True, default=None)
-    country = CharField(null=True, default=None, max_length=128)
+    country = CharField(null=True, default=None, max_length=2)
 
 
 class OWMWeather(Model):
     owm_id = IntegerField(null=False, unique=True)
     name = CharField(null=True, default=None, max_length=64)
     description = CharField(null=True, default=None, max_length=128)
-    icon = CharField(null=True, default=None, max_length=16)
+    icon = CharField(null=True, default=None, max_length=16) #TODO переделать в FileField()

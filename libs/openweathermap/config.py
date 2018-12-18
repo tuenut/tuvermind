@@ -1,8 +1,9 @@
 import os
 
 API_KEY = 'c8ac975c083a2ece2e838496b1d0f7af'
-URL = 'http://api.openweathermap.org/data/2.5/forecast?q=bryansk,RU&appid=%s' % API_KEY
-OPENWAETHERMAP_URL = 'http://openweathermap.org/img/w/'
+URL_FORECAST_5_DAYS = 'http://api.openweathermap.org/data/2.5/forecast?q=bryansk,RU&appid=%s' % API_KEY
+URL_CITY_LIST = 'http://bulk.openweathermap.org/sample/city.list.json.gz'
+URL_IMAGE_PREFIX = 'http://openweathermap.org/img/w/'
 PATH = os.path.expanduser('~/.conky/openweathermap/')
 ICONS_PATH = os.path.join(PATH, 'icons')
 ICONS = {

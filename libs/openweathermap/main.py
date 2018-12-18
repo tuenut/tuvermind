@@ -3,25 +3,26 @@ import wget
 from datetime import datetime as dt
 from json import loads
 from django.utils import timezone
+import gzip
 
-from libs.openweathermap.config import (ICONS, OPENWAETHERMAP_URL, ICONS_PATH,
-                                        MAX_WIDTH, ICON_WIDTH, SYMBOL_H, SYMBOL_W,
-                                        ALIGN, HOURS_TO_DISPLAY, )
+from libs.openweathermap.config import (
+    ICONS, URL_IMAGE_PREFIX, ICONS_PATH, MAX_WIDTH, ICON_WIDTH, SYMBOL_H,
+    SYMBOL_W, ALIGN, HOURS_TO_DISPLAY, URL_FORECAST_5_DAYS, URL_CITY_LIST)
 from libs.utils.network import CurlGetter
-from web.apps.openweathermap.models import OWMCityes, OWMData, OWMWeather
+from web.apps.openweathermap.models import OWMCities, OWMData, OWMWeather
 
-def get_icons():
-    for icon in ICONS:
-        wget.download(OPENWAETHERMAP_URL+icon, out=ICONS_PATH+icon)
+# def get_icons():
+#     for icon in ICONS:
+#         wget.download(URL_IMAGE_PREFIX + icon, out=ICONS_PATH + icon)
 
 def get_weather():
     getter = CurlGetter()
-    getter.get(OPENWAETHERMAP_URL)
+    getter.get(URL_FORECAST_5_DAYS)
     data = loads(getter.response)
-    mapper(data)
+    save_weather_to_db(data)
 
-def mapper(data):
-    city = OWMCityes.objects.get(owm_id=data['city']['id'])
+def save_weather_to_db(data):
+    city = OWMCities.objects.get(owm_id=data['city']['id'])
 
     for item in data['list']:
         instance, created = OWMWeather.objects.get_or_create(
@@ -36,12 +37,37 @@ def mapper(data):
         instance.temperature_max = item['main']['temp_max']
         instance.pressure = item['main']['pressure']
         instance.humidity = item['main']['humidity']
-        instance.weather = OWMWeather.objects.get(owm_id=item['weather']['id'])
+        try:
+            instance.weather = OWMWeather.objects.get(owm_id=item['weather']['id'])
+        except OWMWeather.DoesNotExist:
+            icon_file = None #TODO скачивать файл
+            weather_instance = OWMWeather.objects.create(
+                owm_id=item['weather']['id'],
+                name=item['weather']['main'],
+                description=item['weather']['description'],
+                icon=icon_file,
+            )
         instance.clouds = item['clouds']['all']
         instance.wind_speed = item['wind']['speed']
         instance.wind_deg = item['wind']['deg']
         instance.snow_3h = item['snow']['3h'] if '3h' in item['snow'].keys() else None
         instance.rain_3h = item['rain']['3h'] if '3h' in item['rain'].keys() else None
+        instance.save()
+
+def get_cityes():
+    getter = CurlGetter()
+    getter.get_raw(URL_CITY_LIST)
+    data = loads(gzip.decompress(getter.response))
+    save_cityes_to_db(data)
+
+def save_cityes_to_db(data):
+    for city in data:
+        instance, created = OWMCities.objects.get_or_create(owm_id=city['id'])
+        instance.name = city['name']
+        instance.country = city['country']
+        instance.latitude = city['coord']['lat']
+        instance.longitude = city['coord']['lon']
+        instance.save()
 
 
 

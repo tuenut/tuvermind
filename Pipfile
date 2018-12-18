@@ -12,6 +12,7 @@ uWSGI = "*"
 django_celery_beat = "*"
 celery = "*"
 redis = "*"
+mysql = "*"
 
 [requires]
 python_version = "3.6"
