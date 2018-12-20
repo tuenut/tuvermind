@@ -1,3 +1,3 @@
-from libs.openweathermap.main import get_weather, get_cityes
+from libs.openweathermap.main import Weather, Cities, UpdateConkyConfig
 
-__all__ = ['get_weather', 'get_cityes']
+__all__ = ['Weather', 'Cities', 'UpdateConkyConfig']

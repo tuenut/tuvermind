@@ -13,6 +13,8 @@ django_celery_beat = "*"
 celery = "*"
 redis = "*"
 mysql = "*"
+pillow = "*"
+requests = "*"
 
 [requires]
 python_version = "3.6"

@@ -3,9 +3,18 @@ import os
 API_KEY = 'c8ac975c083a2ece2e838496b1d0f7af'
 URL_FORECAST_5_DAYS = 'http://api.openweathermap.org/data/2.5/forecast?q=bryansk,RU&appid=%s' % API_KEY
 URL_CITY_LIST = 'http://bulk.openweathermap.org/sample/city.list.json.gz'
-URL_IMAGE_PREFIX = 'http://openweathermap.org/img/w/'
+URL_IMAGE_PREFIX = 'http://openweathermap.org/img/w/%s.png'
+
+
+# conky
 PATH = os.path.expanduser('~/.conky/openweathermap/')
 ICONS_PATH = os.path.join(PATH, 'icons')
+MAX_WIDTH = 1200
+ICON_WIDTH = 50
+SYMBOL_W = 8
+SYMBOL_H = 14
+ALIGN = 20
+HOURS_TO_DISPLAY = ['06:00', '12:00', '18:00', ]
 ICONS = {
     '01d.png': 'clear sky',
     '01n.png': 'clear sky',
@@ -27,10 +36,4 @@ ICONS = {
     '50n.png': 'mist',
 }
 
-# conky
-MAX_WIDTH = 1200
-ICON_WIDTH = 50
-SYMBOL_W = 8
-SYMBOL_H = 14
-ALIGN = 20
-HOURS_TO_DISPLAY = ['06:00', '12:00', '18:00', ]
+__all__ = ['API_KEY', 'URL_FORECAST_5_DAYS', 'URL_CITY_LIST', 'HOURS_TO_DISPLAY', 'URL_IMAGE_PREFIX', ]
