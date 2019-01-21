@@ -1,4 +1,6 @@
 CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_TASK_RESULT_EXPIRES = 600
 CELERY_ACCEPT_CONTENT = ['application/json', 'application/x-python-serialize']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SIRIALIZER = 'json'

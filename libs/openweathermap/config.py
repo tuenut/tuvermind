@@ -14,7 +14,7 @@ ICON_WIDTH = 50
 SYMBOL_W = 8
 SYMBOL_H = 14
 ALIGN = 20
-HOURS_TO_DISPLAY = ['06:00', '12:00', '18:00', ]
+HOURS_TO_DISPLAY = ['06:00', '12:00', '18:00']
 ICONS = {
     '01d.png': 'clear sky',
     '01n.png': 'clear sky',

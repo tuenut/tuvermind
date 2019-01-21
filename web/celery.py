@@ -9,7 +9,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web.settings')
 
 __all__ = ['app',]
 
-app = Celery('tuvermind')
+app = Celery('tuvermind', backend='redis')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 

@@ -102,7 +102,7 @@ class UpdateConkyConfig(metaclass=Logger):
 
     def get(self):
         # запрос погоды из базы
-        data = OWMData.objects.filter(timestamp__gte=timezone.now() - timezone.timedelta(hours=3))
+        data = OWMData.objects.filter(timestamp__gte=timezone.now().date())
         self.data = {}
         for obj in data:
             hourly_weather = {
