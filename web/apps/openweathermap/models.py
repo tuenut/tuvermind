@@ -28,6 +28,18 @@ class OWMData(Model):
 
     updated = DateTimeField(null=True, default=None)
 
+    @property
+    def get_min_temp(self):
+        return int(self.temperature_min - 273)
+
+    @property
+    def get_max_temp(self):
+        return int(self.temperature_max - 273)
+
+    @property
+    def get_temp(self):
+        return int(self.temperature - 273)
+
 
 class OWMCities(Model):
     owm_id = IntegerField(null=False, unique=True)

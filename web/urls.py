@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from web.apps.openweathermap.views import WeatherView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', WeatherView.as_view()),
 ]
