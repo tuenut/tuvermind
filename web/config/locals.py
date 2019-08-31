@@ -8,7 +8,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'tuvermind',
-        # 'NAME': 'domain5',
         'USER': 'tuenut',
         'PASSWORD': 'password',
         'HOST': 'localhost',
