@@ -1,9 +1,11 @@
-.idea/
 *.log
 *.pid
 *.sock
 *.lock
 *.ipynb
 *.editorconfig
-celerybeat-schedule
 *.tar.gz
+.idea/
+.logs/
+__pycache__/
+celerybeat-schedule
