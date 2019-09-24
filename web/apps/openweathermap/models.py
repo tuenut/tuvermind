@@ -7,6 +7,10 @@ from django.db.models import (CASCADE, DO_NOTHING, SET_DEFAULT, SET_NULL,
 
 from libs.utils.djangomodelutils import OverwriteStorage
 
+
+__all__ = ['OWMData', 'OWMCities', 'OWMWeather']
+
+
 class OWMData(Model):
     timestamp = DateTimeField(null=True, default=None)
     city = ForeignKey('OWMCities', null=True, default=None,

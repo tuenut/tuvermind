@@ -3,9 +3,8 @@ import logging
 
 from web.config import *
 
-
 DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.56.102']
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -48,29 +47,21 @@ TEMPLATES = [
 ]
 WSGI_APPLICATION = 'web.wsgi.application'
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
 ]
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.abspath('/var/www/tuvermind/static')  # os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.abspath('/var/www/tuvermind/media')  # os.path.join(BASE_DIR, 'media')
 
 LOG_LEVEL = logging.DEBUG
 LOG_DIR = os.path.join(BASE_DIR, '.logs')
@@ -78,7 +69,7 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose' : {
+        'verbose': {
             'format': '%(asctime)s %(levelname)-8s >> [%(custom_call_trace)-36s] [%(process)d] [%(thread)d] %(message)s'
         },
         'task_formatter': {
@@ -91,7 +82,7 @@ LOGGING = {
             'format': '%(message)s'
         },
     },
-    'filters':{},
+    'filters': {},
     'loggers': {},
     'handlers': {
         'basic_stream': {
@@ -101,7 +92,7 @@ LOGGING = {
             "stream": "ext://sys.stdout"
         },
         'basic_file': {
-            'level' : LOG_LEVEL,
+            'level': LOG_LEVEL,
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'basic_formatter',
             'when': 'W6',

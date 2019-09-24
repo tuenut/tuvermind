@@ -1,0 +1,45 @@
+{% load static %}
+
+<div class="card mx-auto my-2 border-0 bg-dark" style="width: 18rem">
+  <div class="card-body px-0">
+
+    <table class="table table-borderless table-striped ">
+      <thead>
+      {% if group == weather.groups.0 %}
+        <tr>
+          <th scope="col">Время</th>
+          <th scope="col" class="text-monospace">{{ item.timestamp.time }}</th>
+        </tr>
+      {% endif %}
+      </thead>
+
+      <tbody class="text-monospace">
+      <tr>
+        <td colspan="2">
+          <div class="d-flex justify-content-center">
+            <img src="{% get_media_prefix %}{{ item.weather.icon }}" height="50" width="50">
+          </div>
+
+        </td>
+      </tr>
+      <tr>
+        <td>Температура</td>
+        <td class="font-weight-bold">{% include "weather/parts/temperature_coloring.html" %}</td>
+      </tr>
+      <tr>
+        <td>Ветер</td>
+        <td>{{ item.wind_speed }}</td>
+      </tr>
+      <tr>
+        <td>Влажность</td>
+        <td>{{ item.humidity }}</td>
+      </tr>
+      <tr>
+        <td>Давление</td>
+        <td>{{ item.pressure }}</td>
+      </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>

@@ -1,14 +1,17 @@
 upstream django {
-    server unix:///home/tuenut/PycharmProjects/tuvermind/uwsgi_django.sock;
+    server unix:///tmp/tuvermind/uwsgi.sock;
     }
 
 server {
     listen 80;
-    server_name localhost;
+    server_name _;
     charset utf-8;
     client_max_body_size 75M;
     location /static {
-        alias /home/tuenut/PycharmProjects/tuvermind/static/;
+        alias /var/www/tuvermind/static/;
+        }
+    location /media {
+        alias /var/www/tuvermind/media/;
         }
     location / {
         uwsgi_pass django;

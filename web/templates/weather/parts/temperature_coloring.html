@@ -1,0 +1,24 @@
+<span class="
+{% if item.get_min_temp > 25 %}
+text-danger
+{% elif 25 >= item.get_min_temp and item.get_min_temp >= 15 %}
+text-warning
+{%  elif 15 > item.get_min_temp and item.get_min_temp > 0 %}
+text-success
+{% elif item.get_min_temp < 0 %}
+text-info
+{% endif %}
+">
+  {{ item.get_min_temp }}
+</span>...
+<span class="
+{% if item.get_max_temp > 25 %}
+text-danger
+{% elif 25 >= item.get_max_temp and item.get_max_temp >= 15 %}
+text-warning
+{%  elif 15 > item.get_max_temp and item.get_max_temp > 0 %}
+text-success
+{% elif item.get_max_temp < 0 %}
+text-info
+{% endif %}
+">{{ item.get_max_temp }}</span>
