@@ -6,7 +6,6 @@ url = "https://pypi.org/simple"
 [packages]
 wget = "*"
 certifi = "*"
-pycurl = "*"
 Django = "*"
 uWSGI = "*"
 django_celery_beat = "*"
