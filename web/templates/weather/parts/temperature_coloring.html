@@ -1,4 +1,4 @@
-<span class="
+<span style="font-size: 14pt" class="
 {% if item.get_min_temp > 25 %}
 text-danger
 {% elif 25 >= item.get_min_temp and item.get_min_temp >= 15 %}
@@ -11,7 +11,7 @@ text-info
 ">
   {{ item.get_min_temp }}
 </span>...
-<span class="
+<span style="font-size: 14pt" class="
 {% if item.get_max_temp > 25 %}
 text-danger
 {% elif 25 >= item.get_max_temp and item.get_max_temp >= 15 %}
@@ -21,4 +21,6 @@ text-success
 {% elif item.get_max_temp < 0 %}
 text-info
 {% endif %}
-">{{ item.get_max_temp }}</span>
+">
+  {{ item.get_max_temp }}
+</span>

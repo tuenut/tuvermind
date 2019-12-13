@@ -45,12 +45,12 @@
 
 
 <main role="main" class="d-flex bg-dark text-light ">
-  <div class="mx-auto" style="width:18rem;">{# reservation space for sidebar #}</div>
+  {% comment %}<div class="mx-auto" style="width:18rem;">{# reservation space for sidebar #}</div>{% endcomment %}
 
   <div class="w-100 mx-auto" style="margin-top: 4rem">
     {% block content %} {% endblock %}
   </div>
-  <div class="d-none d-md-flex mx-auto " style="width:4rem;">{# reservation space for sidebar #}</div>
+  {% comment %}<div class="d-none d-md-flex mx-auto " style="width:4rem;">{# reservation space for sidebar #}</div>{% endcomment %}
 </main>
 
 </body>
