@@ -14,11 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
+from django.views.generic import RedirectView
+
 
 from web.apps.openweathermap.views import WeatherView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', WeatherView.as_view()),
+    re_path(
+        r'^favicon\.ico$',
+        RedirectView.as_view(url='/static/images/favicon.ico'),
+        name='favicon'
+    ),
 ]

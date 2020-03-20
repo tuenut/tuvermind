@@ -4,14 +4,14 @@ import os
 
 from celery import Celery
 
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web.settings')
 
-__all__ = ['app',]
+__all__ = ['app', ]
 
 app = Celery('tuvermind', backend='redis')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
+
 
 @app.task(bind=True)
 def debug_task(self):
