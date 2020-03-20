@@ -15,7 +15,7 @@ class WeatherView(generic.ListView):
     def get_queryset(self):
         data = OWMData.objects.filter(
             timestamp__gte=timezone.now().date(),
-            timestamp__hour__in=[0, 6, 9, 12, 15, 6, 9]
+            timestamp__hour__in=[9, 12, 15, 18, 21]
         )
 
         groups = sorted(list({item.timestamp.date() for item in data}))

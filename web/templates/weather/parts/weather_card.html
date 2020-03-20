@@ -5,12 +5,10 @@
 
     <table class="table table-borderless table-striped ">
       <thead>
-      {% if group == weather.groups.0 %}
-        <tr  class="text-secondary">
-          <th scope="col">Время</th>
-          <th scope="col" class="text-monospace">{{ item.timestamp.time }}</th>
-        </tr>
-      {% endif %}
+      <tr class="text-secondary">
+        <th scope="col">Время</th>
+        <th scope="col" class="text-monospace">{{ item.timestamp.time }}</th>
+      </tr>
       </thead>
 
       <tbody class="text-monospace">
