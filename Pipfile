@@ -6,7 +6,7 @@ url = "https://pypi.org/simple"
 [packages]
 wget = "*"
 certifi = "*"
-Django = "*"
+Django = "<=3"
 uWSGI = "*"
 django_celery_beat = "*"
 celery = "*"
@@ -14,5 +14,7 @@ redis = "*"
 mysql = "*"
 pillow = "*"
 requests = "*"
+djangorestframework = "*"
+django-filter = "*"
 
 [dev-packages]

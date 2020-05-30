@@ -1,3 +1,3 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 celery -A web worker -E --loglevel=DEBUG
