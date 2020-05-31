@@ -51,3 +51,24 @@ class WeatherHistoryViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(instance)
 
         return Response(serializer.data)
+
+    @action(detail=False)
+    def next15h(self, request, *args, **kwargs):
+        closet_to_now = min(
+            map(
+                lambda timestamp: (abs((now() - timestamp).seconds), timestamp),
+                [now() - td(hours=3), now() + td(hours=3)]
+            )
+        )[1]
+
+        queryset = self.get_queryset().filter(timestamp__gte=closet_to_now, timestamp__lt=closet_to_now + td(hours=15))
+
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response(serializer.data)
