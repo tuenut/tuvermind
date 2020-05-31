@@ -20,24 +20,19 @@ from django.conf.urls import url, include
 
 from rest_framework import routers
 
-from web.apps.openweathermap.views import WeatherView
 from web.apps.openweathermap.api.urls import router as weather_router
 
 
 # Routers provide an easy way of automatically determining the URL conf.
 
+router = routers.DefaultRouter()
+router.registry.extend(weather_router.registry)
+
+favicon_path = re_path(r'^favicon\.ico$', RedirectView.as_view(url='/static/images/favicon.ico'), name='favicon')
 
 urlpatterns = [
-    path('', WeatherView.as_view()),
+    favicon_path,
     path('admin/', admin.site.urls),
-
-    re_path(
-        r'^favicon\.ico$',
-        RedirectView.as_view(url='/static/images/favicon.ico'),
-        name='favicon'
-    ),
-
-    path('api/', include(routers.DefaultRouter().urls)),
-    path('api/weather/', include(weather_router.urls)),
-    url(r'^api/auth', include('rest_framework.urls', namespace='rest_framework'))
+    path('api/', include(router.urls)),
+    url(r'api/auth', include('rest_framework.urls', namespace='rest_framework'))
 ]

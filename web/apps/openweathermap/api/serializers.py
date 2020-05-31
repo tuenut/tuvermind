@@ -12,6 +12,9 @@ class OWMWeatherSerializer(serializers.ModelSerializer):
 
 
 class OWMDataSerializer(serializers.HyperlinkedModelSerializer):
+    # temporally while spa in development. Must be remove in future, because spa must make api_request for get image.
+    weather_data = OWMWeatherSerializer(source='weather')
+
     class Meta:
         model = OWMData
-        fields = ['timestamp', 'temperature', 'pressure', 'humidity', 'weather']
+        fields = ['timestamp', 'temperature', 'pressure', 'humidity', 'weather', 'weather_data']
