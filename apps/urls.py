@@ -21,7 +21,6 @@ from django.conf.urls import url, include
 from rest_framework import routers
 
 from apps.openweathermap.api.urls import router as weather_router
-from apps.spaui.views import index
 
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -33,7 +32,6 @@ favicon_path = re_path(r'^favicon\.ico$', RedirectView.as_view(url='/static/imag
 
 urlpatterns = [
     favicon_path,
-    path('', index, name="index"),  # spa
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     url(r'api/auth', include('rest_framework.urls', namespace='rest_framework'))

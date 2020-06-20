@@ -17,8 +17,9 @@ ALLOWED_HOSTS = ['*']
 ROOT_URLCONF = 'apps.urls'
 WSGI_APPLICATION = 'apps.wsgi.application'
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+# TODO find out how use urls like `/d/static/`
+STATIC_URL = '/dstatic/'
+MEDIA_URL = '/dmedia/'
 
 MIDDLEWARE = [
     # 'corsheaders.middleware.CorsMiddleware',
