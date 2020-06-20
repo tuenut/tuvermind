@@ -35,6 +35,6 @@ urlpatterns = [
     favicon_path,
     path('', index, name="index"),  # spa
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
+    path('api/', include(router.urls), name='api'),
     url(r'api/auth', include('rest_framework.urls', namespace='rest_framework'))
 ]
