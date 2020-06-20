@@ -15,6 +15,10 @@ server {
         uwsgi_pass django;
         include /etc/nginx/uwsgi_params;
         }
+    location ~ ^/admin/(.*)? {
+        uwsgi_pass django;
+        include /etc/nginx/uwsgi_params;
+        }
     location /dstatic {
         alias /var/www/tuvermind/static/;
         }
