@@ -10,8 +10,6 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'rest_framework',
 
-    'web',
-    'web.apps',
-    'web.apps.openweathermap',
-
+    'apps.openweathermap',
+    'apps.spaui'
 ]

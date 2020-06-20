@@ -3,6 +3,7 @@ import requests
 from libs.utils.logger import Logger
 
 import pprint
+
 pp = pprint.PrettyPrinter(indent=4, depth=10, width=128)
 
 
@@ -24,10 +25,13 @@ class GetDataByRequests(metaclass=Logger):
         """
         if not proxies:
             return False
+
         pattern = '{proxy_type}://{user}:{passwd}@{host}:{port}/'
         self.proxies_list = [
-            {'http': pattern.format(**proxy),
-             'https': pattern.format(**proxy)}
+            {
+                'http': pattern.format(**proxy),
+                'https': pattern.format(**proxy)
+            }
             for proxy in proxies
         ]
 
@@ -47,7 +51,10 @@ class GetDataByRequests(metaclass=Logger):
                     try:
                         self.response = requests.get(url, headers=headers, timeout=5, proxies=proxy)
                     except:
-                        self.logger.debug('Can not through proxy connect to <%s>\n<%s> <%s>', url, exc_info[0], exc_info[1])
+                        self.logger.debug(
+                            'Can not through proxy connect to <%s>\n<%s> <%s>',
+                            url, exc_info[0], exc_info[1]
+                        )
                     else:
                         break
 

@@ -4,7 +4,7 @@ import logging.config
 import logging.handlers
 import os
 
-from web.settings import LOG_DIR, LOGGING, LOG_LEVEL
+from settings import LOG_DIR, LOGGING, LOG_LEVEL
 
 
 class Logger(type):

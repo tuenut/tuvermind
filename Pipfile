@@ -4,17 +4,15 @@ verify_ssl = true
 url = "https://pypi.org/simple"
 
 [packages]
-wget = "*"
-certifi = "*"
 Django = "<=3"
 uWSGI = "*"
 django_celery_beat = "*"
 celery = "*"
 redis = "*"
-mysql = "*"
-pillow = "*"
+psycopg2-binary = "*"
 requests = "*"
 djangorestframework = "*"
 django-filter = "*"
+pillow = "*"
 
 [dev-packages]

@@ -5,7 +5,7 @@ from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from web.apps.openweathermap.models import OWMWeather, OWMData
+from apps.openweathermap.models import OWMWeather, OWMData
 from .serializers import OWMWeatherSerializer, OWMDataSerializer
 
 

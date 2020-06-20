@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from web.apps.openweathermap.models import OWMWeather, OWMData
+from apps.openweathermap.models import OWMWeather, OWMData
 
 __all__ = ['OWMWeatherSerializer', 'OWMDataSerializer']
 

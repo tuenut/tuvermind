@@ -6,11 +6,12 @@ from io import BytesIO
 
 from django.utils import timezone
 
-from libs.openweathermap.config import (URL_IMAGE_PREFIX, SYMBOL_H, PATH, SYMBOL_W, ALIGN, HOURS_TO_DISPLAY,
-                                        URL_FORECAST_5_DAYS, URL_CITY_LIST)
+from settings.openweathermap import (
+    URL_IMAGE_PREFIX, SYMBOL_H, PATH, SYMBOL_W, ALIGN, HOURS_TO_DISPLAY, URL_FORECAST_5_DAYS, URL_CITY_LIST
+)
 from libs.utils.network import GetDataByRequests
 from libs.utils.logger import Logger
-from web.apps.openweathermap.models import OWMCities, OWMData, OWMWeather
+from apps.openweathermap.models import OWMCities, OWMData, OWMWeather
 
 
 class Weather(metaclass=Logger):
@@ -41,7 +42,7 @@ class Weather(metaclass=Logger):
             instance.pressure = item['main']['pressure']
             instance.humidity = item['main']['humidity']
 
-            #Get weather instance or create if not exist.
+            # Get weather instance or create if not exist.
             try:
                 instance.weather = OWMWeather.objects.get(owm_id=weather['id'])
             except OWMWeather.DoesNotExist:
@@ -94,9 +95,12 @@ class Cities(metaclass=Logger):
             instance.save()
 
 
-
 class UpdateConkyConfig(metaclass=Logger):
+    # TODO: DEPRECATED
+
     def __init__(self):
+        self.data = None
+
         self.get()
         self.process()
 
@@ -170,7 +174,8 @@ class UpdateConkyConfig(metaclass=Logger):
             )
 
             wind = ['{: .2f}м/с'.format(weather[key]['wind_speed']) for key in sorted_hours]
-            wind = construct_text(data=wind,
+            wind = construct_text(
+                data=wind,
                 pattrn_one=wind_1st_pattern,
                 pattern_two=wind_2nd_pattern,
                 pattern_line=wind_line_pattern,
@@ -178,9 +183,11 @@ class UpdateConkyConfig(metaclass=Logger):
             )
 
             icons = [
-                icons_1st_pattern.format(weather[hour]['icon'],
-                                         x=40 + ALIGN * SYMBOL_W * (sorted_hours.index(hour)),
-                                         y=26 + (SYMBOL_H * 4 + 24) * (sorted_days.index(day)), )
+                icons_1st_pattern.format(
+                    weather[hour]['icon'],
+                    x=40 + ALIGN * SYMBOL_W * (sorted_hours.index(hour)),
+                    y=26 + (SYMBOL_H * 4 + 24) * (sorted_days.index(day)),
+                )
                 for hour in sorted_hours
             ]
             icons = ''.join(icons)

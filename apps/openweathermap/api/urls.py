@@ -1,6 +1,6 @@
 from rest_framework import routers
 
-from web.apps.openweathermap.api.views import WeatherTypesViewSet, WeatherHistoryViewSet
+from apps.openweathermap.api.views import WeatherTypesViewSet, WeatherHistoryViewSet
 
 router = routers.SimpleRouter()
 

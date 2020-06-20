@@ -1,10 +1,12 @@
 import os
 
-API_KEY = 'c8ac975c083a2ece2e838496b1d0f7af'
+from settings.secret import API_KEY
+
+__all__ = ['URL_FORECAST_5_DAYS', 'URL_CITY_LIST', 'HOURS_TO_DISPLAY', 'URL_IMAGE_PREFIX', ]
+
 URL_FORECAST_5_DAYS = 'http://api.openweathermap.org/data/2.5/forecast?q=bryansk,RU&appid=%s' % API_KEY
 URL_CITY_LIST = 'http://bulk.openweathermap.org/sample/city.list.json.gz'
 URL_IMAGE_PREFIX = 'http://openweathermap.org/img/w/%s.png'
-
 
 # conky
 PATH = os.path.expanduser('~/.conky/openweathermap/')
@@ -35,5 +37,3 @@ ICONS = {
     '50d.png': 'mist',
     '50n.png': 'mist',
 }
-
-__all__ = ['API_KEY', 'URL_FORECAST_5_DAYS', 'URL_CITY_LIST', 'HOURS_TO_DISPLAY', 'URL_IMAGE_PREFIX', ]

@@ -3,7 +3,7 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import libs.utils.djangomodelutils
-import web.apps.openweathermap.models
+import apps.openweathermap.models
 
 
 class Migration(migrations.Migration):
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 ('owm_id', models.IntegerField(unique=True)),
                 ('name', models.CharField(default=None, max_length=64, null=True)),
                 ('description', models.CharField(default=None, max_length=128, null=True)),
-                ('icon', models.ImageField(default=None, null=True, storage=libs.utils.djangomodelutils.OverwriteStorage(), upload_to=web.apps.openweathermap.models.weather_icon_path)),
+                ('icon', models.ImageField(default=None, null=True, storage=libs.utils.djangomodelutils.OverwriteStorage(), upload_to=apps.openweathermap.models.weather_icon_path)),
             ],
         ),
         migrations.CreateModel(

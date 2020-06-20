@@ -4,11 +4,11 @@ __all__ = ["DATABASES", ]
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'tuvermind',
         'USER': DB_DEFAULT_USER,
         'PASSWORD': DB_DEFAULT_PASSWORD,
         'HOST': 'localhost',
-        'PORT': '3306',
+        'PORT': '5432',
     }
 }

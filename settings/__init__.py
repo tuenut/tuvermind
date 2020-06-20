@@ -7,6 +7,7 @@ from .localization import *
 from .logging import *
 from .paths import *
 from .restframework import *
+from .secret import *
 
 
 DEBUG = True
@@ -20,7 +21,7 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -33,7 +34,9 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
