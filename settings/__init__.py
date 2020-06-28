@@ -13,6 +13,7 @@ from .secret import *
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'apps.urls'
 WSGI_APPLICATION = 'apps.wsgi.application'
