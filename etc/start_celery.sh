@@ -1,3 +1,3 @@
 #!/bin/bash
 
-celery -A web worker -E --loglevel=DEBUG
+celery -A apps worker -E --loglevel=DEBUG

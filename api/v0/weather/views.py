@@ -1,7 +1,8 @@
+from django.db.models import Q
 from django.utils.timezone import now
 from datetime import datetime as dt, timedelta as td
 
-from rest_framework import viewsets, filters, status
+from rest_framework import viewsets, filters, status, generics, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -14,16 +15,16 @@ class WeatherTypesViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = OWMWeatherSerializer
 
 
-class WeatherHistoryViewSet(viewsets.ReadOnlyModelViewSet):
+class WeatherViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = OWMData.objects.all().order_by("-timestamp")
     serializer_class = OWMDataSerializer
 
-    @action(url_path='(?P<date>[^/.]+)', detail=True)
+    @action(url_path='(history/?P<date>[^/.]+)', detail=True)
     def date(self, request, *args, **kwargs):
         try:
             date = dt.strptime(kwargs.get("date"), "%d%m%Y")
         except ValueError:
-            return Response("Please use as `/api/weather/history/date/DDMMYYYY/`.", status=status.HTTP_404_NOT_FOUND)
+            return Response("Please use as `/api/weather/history/DDMMYYYY/`.", status=status.HTTP_404_NOT_FOUND)
 
         queryset = self.get_queryset().filter(
             timestamp__day=date.day,

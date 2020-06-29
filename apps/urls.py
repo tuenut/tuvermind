@@ -20,8 +20,8 @@ from django.conf.urls import url, include
 
 from rest_framework import routers
 
-from apps.openweathermap.api.urls import router as weather_router
-
+from api.v0.weather.urls import router as weather_router, urlpatterns as weather_urls
+from api.v0.authentication.urls import urlpatterns as auth_urls
 
 # Routers provide an easy way of automatically determining the URL conf.
 
@@ -34,5 +34,8 @@ urlpatterns = [
     favicon_path,
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    url(r'api/auth', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'api/auth', include('rest_framework.urls', namespace='rest_framework')),
 ]
+
+urlpatterns.extend(weather_urls)
+urlpatterns.extend(auth_urls)
