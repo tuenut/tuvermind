@@ -1,4 +1,4 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets
 
 from apps.openweathermap.models import OWMWeather, OWMData
 from .serializers import OWMWeatherSerializer, OWMDataSerializer
