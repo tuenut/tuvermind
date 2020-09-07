@@ -19,6 +19,10 @@ class WeatherViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = OWMData.objects.all().order_by("-timestamp")
     serializer_class = OWMDataSerializer
 
+    filterset_fields = {
+        "timestamp": ["exact", "lte", "gte"]
+    }
+
     @action(url_path='(history/?P<date>[^/.]+)', detail=True)
     def date(self, request, *args, **kwargs):
         try:

@@ -1,0 +1,12 @@
+django<3
+uwsgi
+django_celery_beat
+celery
+redis
+psycopg2-binary
+requests
+djangorestframework
+django-filter
+pillow
+django-cors-headers
+djangorestframework-simplejwt
