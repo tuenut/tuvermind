@@ -5,6 +5,7 @@
 *.ipynb
 *.editorconfig
 *.tar.gz
+.pycharm_venv/
 .idea/
 .ide_venv/
 .logs/

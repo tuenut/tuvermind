@@ -14,4 +14,5 @@ INSTALLED_APPS = [
     'django_filters',
 
     'apps.openweathermap',
+    'apps.todoes'
 ]
