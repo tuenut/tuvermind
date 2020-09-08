@@ -20,7 +20,7 @@ from django.conf.urls import url, include
 
 from rest_framework import routers
 
-from api.v0.weather.urls import router as weather_router, urlpatterns as weather_urls
+from api.v0.urls import router as weather_router, urlpatterns as weather_urls
 from api.v0.authentication.urls import urlpatterns as auth_urls
 
 # Routers provide an easy way of automatically determining the URL conf.
