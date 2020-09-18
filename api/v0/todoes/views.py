@@ -10,7 +10,7 @@ class TodoesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
 
     filterset_fields = {
-        "repeatabletodo": ["isnull"]
+
     }
 
     ordering = ["created"]

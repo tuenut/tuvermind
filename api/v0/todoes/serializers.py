@@ -1,39 +1,44 @@
 from rest_framework import serializers
 
-from apps.todoes.models import TODO, RepeatableTODO, RepeatableTODOHistory
+from .timeintervals.serializers import IntervalSerializer, ClockedSerializer, CrontabSerializer
+from apps.todoes.models import TODO, RepeatableTODO, RepeatableTODOHistory, CrontabTODOSchedule
 
 __all__ = ["TODOSerializer", ]
 
 
-class RepeatableTODOSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = RepeatableTODO
-        fields = ["repeat_every_minutes", "start_at"]
-
-
 class TODOSerializer(serializers.HyperlinkedModelSerializer):
-    repeat_every = serializers.IntegerField(source="repeatabletodo.repeat_every_minutes", required=False)
-    start_at = serializers.DateTimeField(source="repeatabletodo.start_at", read_only=True)
+    schedule = serializers.PrimaryKeyRelatedField(
+        source="repeatabletodo.crontab_schedule", allow_null=True, queryset=CrontabTODOSchedule.objects.filter(_todo=True)
+    )
+
 
     class Meta:
         model = TODO
         fields = [
-            "id", "title", "description", "created", "updated",
-            "repeat_every", "start_at",
+            "id", "title", "description", "created", "updated", "schedule",
         ]
 
     def create(self, validated_data):
-        print(validated_data)
+        repeatable = validated_data.pop("repeatabletodo", {})
+        validated_data = {**validated_data, **repeatable}
 
-        try:
-            repeatable = validated_data.pop("repeatabletodo")
-        except KeyError:
-            repeatable = {}
+        ModelClass = RepeatableTODO if repeatable else TODO
+        todo = ModelClass.objects.create(**validated_data)
 
+        return todo
+
+    def update(self, instance, validated_data):
+        repeatable = validated_data.pop("repeatabletodo", {})
         validated_data = {**validated_data, **repeatable}
 
         ModelClass = RepeatableTODO if repeatable else TODO
 
-        todo = ModelClass.objects.create(**validated_data)
+        # TODO надо все же пересмотреть структуру моделек с todo
+        instance = ModelClass.objects.get()
 
-        return todo
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+
+        return instance
