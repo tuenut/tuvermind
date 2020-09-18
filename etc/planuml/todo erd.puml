@@ -1,0 +1,25 @@
+@startuml
+skinparam defaultFontName Source Code Pro
+skinparam defaultFontSize 14
+
+entity  TODO {
+ * id: int <<auto>>
+ --
+ * title:               char(64)
+ * description:         char(2048)
+ * created:             datetime <<auto>>
+ * updated:             datetime <<auto>>
+ * crontab_schedule:    int <<FK>>
+ * clocked_schedule:    int <<FK>>
+ * interval_schedule:   int <<FK>>
+}
+
+entity TODOExecutionHistory {
+ * id:                      int <<auto>>
+ --
+ * completion_confirmation: datetime
+ * notify_at: datetime
+}
+
+TODO ||--o{ TODOExecutionHistory
+@enduml
