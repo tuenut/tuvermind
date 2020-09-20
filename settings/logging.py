@@ -8,16 +8,16 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
+            '()': 'libs.logging.formatters.CallTraceFormatter',
             'format': '%(asctime)s %(levelname)-8s >> [%(custom_call_trace)-36s] [%(process)d] [%(thread)d] %(message)s'
         },
         'task_formatter': {
+            '()': 'libs.logging.formatters.TaskFormatter',
             'format': '%(asctime)s %(levelname)-8s >> [%(custom_call_trace)-36s] [Task: %(task_id)s] %(message)s'
         },
         'basic_formatter': {
+            '()': 'libs.logging.formatters.CallTraceFormatter',
             'format': '%(asctime)s %(levelname)-8s >> [%(custom_call_trace)-36s] %(message)s'
-        },
-        'slack_formatter': {
-            'format': '%(message)s'
         },
     },
     'filters': {},

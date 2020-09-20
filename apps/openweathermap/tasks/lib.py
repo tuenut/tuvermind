@@ -10,7 +10,7 @@ from settings.openweathermap import (
     URL_IMAGE_PREFIX, SYMBOL_H, PATH, SYMBOL_W, ALIGN, HOURS_TO_DISPLAY, URL_FORECAST_5_DAYS, URL_CITY_LIST
 )
 from libs.utils.network import GetDataByRequests
-from libs.utils.logger import Logger
+from libs.logging.logger import Logger
 from apps.openweathermap.models import OWMCities, OWMData, OWMWeather
 
 

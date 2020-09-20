@@ -1,6 +1,6 @@
 import requests
 
-from libs.utils.logger import Logger
+from libs.logging.logger import Logger
 
 import pprint
 
