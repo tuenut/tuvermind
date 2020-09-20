@@ -74,7 +74,8 @@ class Logger(type):
         # Get default handlers from LOGGING by names in self.handlers.
         handlers = {
             self.get_handler_name(key): self.LOGGING['handlers'][key]
-            for key in self.LOGGING['handlers'] if key in self.handlers
+            for key in self.LOGGING['handlers']
+            if key in self.handlers
         }
         logger['handlers'].extend([hndlr for hndlr in handlers])
 
