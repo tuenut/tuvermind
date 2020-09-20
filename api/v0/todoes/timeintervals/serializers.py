@@ -18,7 +18,7 @@ class ClockedSerializer(serializers.ModelSerializer):
 
 
 class CrontabSerializer(serializers.ModelSerializer):
-    timezone = serializers.CharField()
+    timezone = serializers.CharField(required=False)
 
     class Meta:
         model = CrontabTODOSchedule

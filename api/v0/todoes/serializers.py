@@ -1,21 +1,35 @@
 from rest_framework import serializers
 
 from .timeintervals.serializers import IntervalSerializer, ClockedSerializer, CrontabSerializer
-from apps.todoes.models import TODO, RepeatableTODO, RepeatableTODOHistory, CrontabTODOSchedule
+from apps.todoes.models import TodoProxy, TODO, RepeatableTODO, RepeatableTODOHistory, CrontabTODOSchedule, \
+    ClockedTODOSchedule, IntervalTODOSchedule
 
 __all__ = ["TODOSerializer", ]
 
 
 class TODOSerializer(serializers.HyperlinkedModelSerializer):
-    schedule = serializers.PrimaryKeyRelatedField(
-        source="repeatabletodo.crontab_schedule", allow_null=True, queryset=CrontabTODOSchedule.objects.filter(_todo=True)
+    crontab_schedule = serializers.PrimaryKeyRelatedField(
+        source="repeatabletodo.crontab_schedule",
+        allow_null=True,
+        queryset=CrontabTODOSchedule.objects.filter(_todo=True)
     )
-
+    clocked_schedule = serializers.PrimaryKeyRelatedField(
+        source="repeatabletodo.clocked_schedule",
+        allow_null=True,
+        queryset=ClockedTODOSchedule.objects.filter(_todo=True)
+    )
+    interval_schedule = serializers.PrimaryKeyRelatedField(
+        source="repeatabletodo.interval_schedule",
+        allow_null=True,
+        queryset=IntervalTODOSchedule.objects.filter(_todo=True)
+    )
+    crontab = CrontabSerializer(source="repeatabletodo.crontab_schedule")
 
     class Meta:
-        model = TODO
+        model = TodoProxy
         fields = [
-            "id", "title", "description", "created", "updated", "schedule",
+            "id", "title", "description", "created", "updated", "crontab_schedule", "clocked_schedule",
+            "interval_schedule", "crontab"
         ]
 
     def create(self, validated_data):
