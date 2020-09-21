@@ -1,0 +1,1 @@
+from api.bases.serializers import LoggedSerializerWrapper

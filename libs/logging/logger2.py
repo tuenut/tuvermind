@@ -8,9 +8,8 @@ from settings import LOG_DIR, LOGGING, LOG_LEVEL
 
 
 class Logger:
-    log_level = LOG_LEVEL
     LOGGING = copy.deepcopy(LOGGING)
-    __log_dir = LOG_DIR
+    log_level = LOG_LEVEL
 
     __default_logger = {
         'level': log_level,
@@ -18,49 +17,38 @@ class Logger:
         'propagate': False,
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    @property
+    def logger_name(self):
+        return f"{self.__module__}.{self.__class__.__name__}"
 
-        self.__check_dirs()
-        self.__configure()
+    def __init__(self, *args, **kwargs):
+        self.__default_setup_logger()
 
         logging.config.dictConfig(self.LOGGING)
 
-        self.logger = logging.getLogger(self.__logger_name)
+        self.logger = logging.getLogger(self.logger_name)
+        self.logger.setLevel(self.log_level)
 
-    def __check_dirs(self):
-        try:
-            os.mkdir(self.__log_dir)
-        except OSError as e:
-            if e.errno == 17:
-                pass
-            else:
-                raise
+        super(Logger, self).__init__(*args, **kwargs)
 
-    def __configure(self):
-        for handler in self.LOGGING["handlers"]:
-            if "filename" in handler:
-                handler["filename"] = self.__log_file
+    def __default_setup_logger(self):
+        logger = copy.deepcopy(self.__default_logger)
 
-        logger_config = copy.deepcopy(self.__default_logger)
-        logger_config["handlers"] = list(self.LOGGING["handlers"].keys())
+        logger['handlers'] = list(self.LOGGING["handlers"].keys())
 
-        self.LOGGING['loggers'].update({self.__logger_name: logger_config})
+        # Set filename if FileHandler or same.
+        for handler in self.LOGGING["handlers"].values():
+            if 'filename' in handler:
+                handler['filename'] = self.__get_filename()
 
-    @property
-    def __log_file(self):
-        file_name = os.path.join(self.__module_path, self.__class_name + '.log')
+        self.LOGGING['loggers'].update({
+            self.logger_name: logger
+        })
 
-        return os.path.join(LOG_DIR, file_name)
+    def __get_filename(self):
+        log_dir_path = os.path.join(LOG_DIR, self.__module__.replace(".", "/"))
+        log_file_path = os.path.join(log_dir_path, f"{self.__class__.__name__}.log")
 
-    @property
-    def __module_path(self):
-        return '/'.join(self.__module__.split('.'))
+        os.makedirs(log_dir_path, exist_ok=True)
 
-    @property
-    def __class_name(self):
-        return self.__class__.__name__
-
-    @property
-    def __logger_name(self):
-        return f"{self.__module__}.{self.__class__.__name__}"
+        return log_file_path
