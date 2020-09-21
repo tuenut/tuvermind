@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from apps.todoes.models import ClockedTODOSchedule, CrontabTODOSchedule, IntervalTODOSchedule
 
-__all__ = ["IntervalSerializer", ]
+__all__ = ["IntervalSerializer", "ClockedSerializer", "CrontabSerializer"]
 
 
 class IntervalSerializer(serializers.ModelSerializer):
