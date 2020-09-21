@@ -1,3 +1,4 @@
+import pprint
 import copy
 import logging
 import logging.config
@@ -28,6 +29,7 @@ class Logger:
 
         self.logger = logging.getLogger(self.logger_name)
         self.logger.setLevel(self.log_level)
+        self.logger.pp = pprint.PrettyPrinter(indent=4, depth=10, width=128)
 
         super(Logger, self).__init__(*args, **kwargs)
 
