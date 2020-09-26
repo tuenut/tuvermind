@@ -54,7 +54,7 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
     }
 
     @action(detail=True)
-    def complete_task(self, request, pk=None):
+    def complete(self, request, pk=None):
         try:
             instance = TodoTask.objects.get(pk=pk)
         except TodoTask.DoesNotExist:
