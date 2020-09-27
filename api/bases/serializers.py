@@ -1,12 +1,16 @@
 import pprint
 
+from django.core.exceptions import ObjectDoesNotExist
+
+from rest_framework import serializers
+
 from libs.logging.logger2 import Logger
 
 pp = pprint.PrettyPrinter(indent=4, depth=10, width=128)
 
 
 class LoggedSerializerWrapper(Logger):
-    logged_methods = ["create", "to_representation"]
+    logged_methods = []
 
     def __getattribute__(self, name):
         attr = super().__getattribute__(name)
@@ -24,3 +28,8 @@ class LoggedSerializerWrapper(Logger):
             return method(*args, **kwargs)
 
         return wrapper
+
+
+class DatetimeListField(serializers.ListField):
+    child = serializers.DateTimeField()
+

@@ -29,7 +29,10 @@ class Logger:
 
         self.logger = logging.getLogger(self.logger_name)
         self.logger.setLevel(self.log_level)
-        self.logger.pp = pprint.PrettyPrinter(indent=4, depth=10, width=128)
+        pp = pprint.PrettyPrinter(indent=4, depth=10, width=128)
+
+        self.logger.pformat = pp.pformat
+        self._pretty_printer = pp
 
         super(Logger, self).__init__(*args, **kwargs)
 

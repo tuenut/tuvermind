@@ -10,6 +10,7 @@ class TodoTask(models.Model):
 
     created = models.DateTimeField(auto_now_add=True, null=False)
     updated = models.DateTimeField(auto_now=True, null=False)
+    completed = models.DateTimeField(null=True)
 
     def __repr__(self):
         # for debug
@@ -36,7 +37,9 @@ class ScheduledTodoTask(TodoTask):
     )
 
 
-class TodoTaskHistory(models.Model):
-    task = models.ForeignKey("TodoTask", on_delete=models.CASCADE)
-    notify_at = models.DateTimeField(null=True)
-    completed = models.DateTimeField(null=True)
+class TodoTaskReminder(models.Model):
+    task = models.ForeignKey(
+        "TodoTask",
+        on_delete=models.CASCADE, related_name="reminders", related_query_name="reminder"
+    )
+    when = models.DateTimeField(null=True)
