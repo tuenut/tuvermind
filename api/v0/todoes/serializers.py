@@ -1,6 +1,3 @@
-from __future__ import annotations
-from typing import List
-
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 
