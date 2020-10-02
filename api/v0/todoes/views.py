@@ -22,10 +22,24 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
     ordering = ["created"]
     ordering_fields = []
 
-    UPDATE_NOK = {
-        "_operation_result": {
-            "message": "Cant update completed task.",
-            "code": "NOK"
+    messages = {
+        "TASK_UPDATING_NOK": {
+            "_operation_result": {
+                "message": "Cant update completed task.",
+                "code": "NOK"
+            }
+        },
+        "TASK_COMPLETION_OK": {
+            "_operation_result": {
+                "message": "Task complete.",
+                "code": "OK"
+            }
+        },
+        "TASK_COMPLETION_NOK": {
+            "_operation_result": {
+                "message": "Task already completed.",
+                "code": "NOK"
+            }
         }
     }
 
@@ -36,23 +50,9 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
             raise
 
         if instance.completed:
-            return Response(self.UPDATE_NOK)
+            return Response(self.messages["TASK_UPDATING_NOK"])
 
         return super().update(request, *args, **kwargs)
-
-
-    COMPLETE_TASK_OK = {
-        "_operation_result": {
-            "message": "Task complete.",
-            "code": "OK"
-        }
-    }
-    COMPLETE_TASK_NOK = {
-        "_operation_result": {
-            "message": "Task already completed.",
-            "code": "NOK"
-        }
-    }
 
     @action(detail=True)
     def complete(self, request, pk=None):
@@ -62,18 +62,30 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
             raise
 
         if instance.completed:
-            data = self.get_serializer(request).data
-            data.update(self.COMPLETE_TASK_NOK)
+            data = self.get_serializer(instance).data
+            data.update(self.messages["TASK_COMPLETION_NOK"])
 
             return Response(data)
         else:
             instance.completed = now()
             instance.save()
 
-            data = self.get_serializer(request).data
-            data.update(self.COMPLETE_TASK_OK)
+            data = self.get_serializer(instance).data
+            data.update(self.messages["TASK_COMPLETION_OK"])
 
             return Response(data)
+
+    @action(detail=False)
+    def today(self, request):
+        today_todoes = self.get_queryset().filter(reminder__when__date=now(), completed=None)
+
+        page = self.paginate_queryset(today_todoes)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(today_todoes, many=True)
+        return Response(serializer.data)
 
 
 class ScheduledTodoTaskViewSet(Logger, viewsets.ModelViewSet):
