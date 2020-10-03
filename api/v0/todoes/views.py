@@ -1,19 +1,18 @@
 from django.utils.timezone import now
-from django.db import transaction
 
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.v0.todoes.serializers import TodoTaskSerializer, ScheduledTodoTaskSerializer
-from apps.todoes.models import TodoTask, TodoTaskReminder, ScheduledTodoTask
+from apps.todoes.models import TodoTaskBase, TodoTaskReminder, ScheduledTodoTask
 from libs.logging.logger2 import Logger
 
 __all__ = ["TodoTaskViewSet", "ScheduledTodoTaskViewSet"]
 
 
 class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
-    queryset = TodoTask.objects.all()
+    queryset = TodoTaskBase.objects.all()
     serializer_class = TodoTaskSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -45,8 +44,8 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
 
     def update(self, request, *args, pk=None, **kwargs):
         try:
-            instance = TodoTask.objects.get(pk=pk)
-        except TodoTask.DoesNotExist:
+            instance = TodoTaskBase.objects.get(pk=pk)
+        except TodoTaskBase.DoesNotExist:
             raise
 
         if instance.completed:
@@ -57,8 +56,8 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
     @action(detail=True)
     def complete(self, request, pk=None):
         try:
-            instance = TodoTask.objects.get(pk=pk)
-        except TodoTask.DoesNotExist:
+            instance = TodoTaskBase.objects.get(pk=pk)
+        except TodoTaskBase.DoesNotExist:
             raise
 
         if instance.completed:

@@ -1,2 +1,1 @@
-from .schedule import ClockedTODOSchedule, CrontabTODOSchedule, IntervalTODOSchedule
-from .todo import TodoTask, ScheduledTodoTask, TodoTaskReminder
+from .todo import TodoTaskBase, ScheduledTodoTask, TodoTaskReminder

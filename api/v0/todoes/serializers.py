@@ -4,8 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 
 from api.bases.serializers import LoggedSerializerWrapper, DatetimeListField
-from api.v0.todoes.timeintervals.serializers import CrontabSerializer, ClockedSerializer, IntervalSerializer
-from apps.todoes.models import TodoTask, ScheduledTodoTask, TodoTaskReminder
+from apps.todoes.models import TodoTaskBase, ScheduledTodoTask, TodoTaskReminder
 
 __all__ = ["TodoTaskSerializer", "ScheduledTodoTaskSerializer"]
 
@@ -23,7 +22,7 @@ class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
     reminders = RemindersField(many=True, queryset=TodoTaskReminder.objects.all(), slug_field='when')
 
     class Meta:
-        model = TodoTask
+        model = TodoTaskBase
         fields = ["id", "title", "description", "created", "updated", "completed", "reminders"]
         read_only_fields = ["created", "updated", "completed"]
 
@@ -55,14 +54,9 @@ class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
 
 
 class ScheduledTodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
-    crontab_details = CrontabSerializer(source="crontab_schedule", read_only=True)
-    clocked_details = ClockedSerializer(source="clocked_schedule", read_only=True)
-    interval_details = IntervalSerializer(source="interval_schedule", read_only=True)
-
     class Meta:
         model = ScheduledTodoTask
         fields = [
             "id", "title", "description", "created", "updated", "history",
             "crontab_details", "clocked_details", "interval_details",
-            "crontab_schedule", "clocked_schedule", "interval_schedule"
         ]
