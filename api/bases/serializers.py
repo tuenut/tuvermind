@@ -28,11 +28,3 @@ class LoggedSerializerWrapper(Logger):
             return method(*args, **kwargs)
 
         return wrapper
-
-
-class DatetimeListField(serializers.ListField):
-    child = serializers.DateTimeField()
-
-
-class IntegerListField(serializers.ListField):
-    child = serializers.IntegerField()

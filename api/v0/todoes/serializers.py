@@ -1,28 +1,24 @@
 from django.db import transaction
-from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 from rest_framework import serializers
 
-from api.bases.serializers import LoggedSerializerWrapper, IntegerListField
+from api.bases.serializers import LoggedSerializerWrapper
 from apps.todoes.models import TodoTask, ScheduledTodoTask, TodoTaskReminder
 
 __all__ = ["TodoTaskSerializer", "ScheduledTodoTaskSerializer"]
 
 
-class RemindersSerializer(serializers.SlugRelatedField, serializers.IntegerField):
-    def to_internal_value(self, data):
-        data = super(serializers.SlugRelatedField, self).to_internal_value(data)
+class RemindersSerializer(serializers.ModelSerializer):
+    dimension = serializers.ChoiceField(choices=TodoTaskReminder.DIMENSION_CHOICES)
 
-        try:
-            return self.get_queryset().get(**{self.slug_field: data})
-        except ObjectDoesNotExist:
-            return serializers.IntegerField().run_validation(data)
-        except (TypeError, ValueError):
-            self.fail('invalid')
+    class Meta:
+        model = TodoTaskReminder
+        fields = ["value", "dimension"]
 
 
 class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
-    reminders = RemindersSerializer(many=True, queryset=TodoTaskReminder.objects.all(), slug_field='remind_for_minutes')
+    reminders = RemindersSerializer(many=True)
 
     class Meta:
         model = TodoTask
@@ -47,21 +43,17 @@ class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
 
         return super().update(instance, validated_data)
 
-    def _update_reminders(self, instance, reminders):
-        reminders_set = set(
-            value.remind_for_minutes if isinstance(value, TodoTaskReminder) else int(value)
-            for value in reminders
-        )
-        existed_set = set(instance.reminders.values_list("remind_for_minutes", flat=True))
+    @staticmethod
+    def _update_reminders(instance, reminders):
+        for reminder in reminders:
+            TodoTaskReminder.objects.get_or_create(**reminder)
 
-        values_to_create = reminders_set - existed_set
-        values_to_remove = existed_set - reminders_set
+        reminders_filter_query = Q()
+        for reminder in reminders:
+            reminders_filter_query |= Q(**reminder)
 
-        instance.reminders.filter(remind_for_minutes__in=values_to_remove).delete()
-        instance.reminders.add(*[
-            TodoTaskReminder.objects.get_or_create(remind_for_minutes=value)[0]
-            for value in values_to_create
-        ])
+        instance.reminders.clear()
+        instance.reminders.add(*TodoTaskReminder.objects.filter(reminders_filter_query))
 
         instance.save()
 

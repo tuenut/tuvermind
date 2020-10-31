@@ -109,4 +109,17 @@ class RepeatVariant(models.Model):
 
 
 class TodoTaskReminder(models.Model):
-    remind_for_minutes = models.IntegerField(default=0)
+    MINUTES = "min"
+    HOURS = "hour"
+    DAYS = "day"
+    WEEKS = "week"
+
+    DIMENSION_CHOICES = (
+        (MINUTES, "Minutes"),
+        (HOURS, "Hours"),
+        (DAYS, "Days"),
+        (WEEKS, "Weeks")
+    )
+
+    value = models.IntegerField(default=0)
+    dimension = models.CharField(max_length=4, default=MINUTES, null=False)

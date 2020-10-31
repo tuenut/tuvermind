@@ -17,17 +17,29 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
     Api usage example:
         {
             "id": 3,
-            "title": "qwe",
-            "description": "wqesad",
-            "planned_completion_date": "2020-11-03",
-            "planned_completion_time": "10:30:00",
+            "title": "string",
+            "description": "string",
+            "created": "2020-10-31T16:18:14.729107Z",
+            "updated": "2020-10-31T20:19:32.242457Z",
+            "planned_completion_date": null,
+            "planned_completion_time": null,
+            "completed": null,
             "reminders": [
-                "123",
-                555,
-                3211
+                {
+                    "value": "1",
+                    "dimension": "min"
+                },
+                {
+                    "value": 123,
+                    "dimension": "day"
+                }
             ]
         }
+
+    - Reminder value can be int or string convertible to int.
+    - Reminder dimension can be one of "min", "hour", "day", "week"
     """
+
     queryset = TodoTask.objects.all()
     serializer_class = TodoTaskSerializer
     permission_classes = [permissions.AllowAny]
