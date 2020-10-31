@@ -19,6 +19,8 @@ class RemindersSerializer(serializers.ModelSerializer):
 
 class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
     reminders = RemindersSerializer(many=True)
+    title = serializers.CharField(allow_blank=True)
+    description = serializers.CharField(allow_blank=True)
 
     class Meta:
         model = TodoTask
