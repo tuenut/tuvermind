@@ -6,6 +6,9 @@ from django.utils.translation import gettext_lazy as _
 
 
 class TodoTaskBase(models.Model):
+    class Meta:
+        abstract = True
+
     title = models.CharField(max_length=32, null=False, default="")
     description = models.CharField(max_length=2048, null=False, default="")
 
@@ -13,7 +16,7 @@ class TodoTaskBase(models.Model):
     updated = models.DateTimeField(auto_now=True, null=False)
     completed = models.DateTimeField(null=True)
 
-    remindres = models.ManyToManyField("TodoTaskReminder", )
+    reminders = models.ManyToManyField("TodoTaskReminder", )
 
     def __repr__(self):
         # for debug
@@ -26,7 +29,8 @@ class TodoTaskBase(models.Model):
 
 
 class TodoTask(TodoTaskBase):
-    planned_completion_date = models.DateTimeField(null=True, default=None)
+    planned_completion_date = models.DateField(null=True, default=None)
+    planned_completion_time = models.TimeField(null=True, default=None)
 
 
 class ScheduledTodoTask(TodoTaskBase):

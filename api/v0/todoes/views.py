@@ -1,18 +1,34 @@
 from django.utils.timezone import now
+from django.db.models import Q
 
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.v0.todoes.serializers import TodoTaskSerializer, ScheduledTodoTaskSerializer
-from apps.todoes.models import TodoTaskBase, TodoTaskReminder, ScheduledTodoTask
+from apps.todoes.models import TodoTask, TodoTaskReminder, ScheduledTodoTask
 from libs.logging.logger2 import Logger
 
 __all__ = ["TodoTaskViewSet", "ScheduledTodoTaskViewSet"]
 
 
 class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
-    queryset = TodoTaskBase.objects.all()
+    """
+    Api usage example:
+        {
+            "id": 3,
+            "title": "qwe",
+            "description": "wqesad",
+            "planned_completion_date": "2020-11-03",
+            "planned_completion_time": "10:30:00",
+            "reminders": [
+                "123",
+                555,
+                3211
+            ]
+        }
+    """
+    queryset = TodoTask.objects.all()
     serializer_class = TodoTaskSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -43,9 +59,11 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
     }
 
     def update(self, request, *args, pk=None, **kwargs):
+        """Prevent update already completed task."""
+
         try:
-            instance = TodoTaskBase.objects.get(pk=pk)
-        except TodoTaskBase.DoesNotExist:
+            instance = TodoTask.objects.get(pk=pk)
+        except TodoTask.DoesNotExist:
             raise
 
         if instance.completed:
@@ -54,10 +72,11 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
     @action(detail=True)
-    def complete(self, request, pk=None):
+    def complete(self, *args, pk=None, **kwargs):
+        """This is only way to complete task."""
         try:
-            instance = TodoTaskBase.objects.get(pk=pk)
-        except TodoTaskBase.DoesNotExist:
+            instance = TodoTask.objects.get(pk=pk)
+        except TodoTask.DoesNotExist:
             raise
 
         if instance.completed:
@@ -75,8 +94,11 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
             return Response(data)
 
     @action(detail=False)
-    def today(self, request):
-        today_todoes = self.get_queryset().filter(reminder__when__date=now(), completed=None)
+    def today(self, *args, **kwargs):
+        """Shortcut to get tasks list filtered by today date."""
+
+        today_or_none = Q(planned_completion_date=now()) | Q(planned_completion_date=None)
+        today_todoes = self.get_queryset().filter(today_or_none, completed=None)
 
         page = self.paginate_queryset(today_todoes)
         if page is not None:

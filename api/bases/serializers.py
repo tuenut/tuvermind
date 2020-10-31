@@ -33,3 +33,6 @@ class LoggedSerializerWrapper(Logger):
 class DatetimeListField(serializers.ListField):
     child = serializers.DateTimeField()
 
+
+class IntegerListField(serializers.ListField):
+    child = serializers.IntegerField()

@@ -1,1 +1,1 @@
-from .todo import TodoTaskBase, ScheduledTodoTask, TodoTaskReminder
+from .todo import TodoTask, ScheduledTodoTask, TodoTaskReminder
