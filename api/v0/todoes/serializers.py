@@ -47,15 +47,16 @@ class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
 
     @staticmethod
     def _update_reminders(instance, reminders):
-        for reminder in reminders:
-            TodoTaskReminder.objects.get_or_create(**reminder)
-
-        reminders_filter_query = Q()
-        for reminder in reminders:
-            reminders_filter_query |= Q(**reminder)
-
         instance.reminders.clear()
-        instance.reminders.add(*TodoTaskReminder.objects.filter(reminders_filter_query))
+
+        if reminders:
+            reminders_filter_query = Q()
+
+            for reminder in reminders:
+                TodoTaskReminder.objects.get_or_create(**reminder)
+                reminders_filter_query |= Q(**reminder)
+
+            instance.reminders.add(*TodoTaskReminder.objects.filter(reminders_filter_query))
 
         instance.save()
 
