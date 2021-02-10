@@ -27,17 +27,17 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
             "reminders": [
                 {
                     "value": "1",
-                    "dimension": "min"
+                    "units": "min"
                 },
                 {
                     "value": 123,
-                    "dimension": "day"
+                    "units": "day"
                 }
             ]
         }
 
     - Reminder value can be int or string convertible to int.
-    - Reminder dimension can be one of "min", "hour", "day", "week"
+    - Reminder units can be one of "min", "hour", "day", "week"
     """
 
     queryset = TodoTask.objects.all()
@@ -131,61 +131,56 @@ class ScheduledTodoTaskViewSet(Logger, viewsets.ModelViewSet):
     ordering = ["created"]
     ordering_fields = []
 
-    UPDATE_NOK = {
-        "_operation_result": {
-            "message": "Cant update completed task.",
-            "code": "NOK"
+    messages = {
+        "TASK_UPDATING_NOK": {
+            "_operation_result": {
+                "message": "Cant update completed task.",
+                "code": "NOK"
+            }
+        },
+        "TASK_COMPLETION_OK": {
+            "_operation_result": {
+                "message": "Task complete.",
+                "code": "OK"
+            }
+        },
+        "TASK_COMPLETION_NOK": {
+            "_operation_result": {
+                "message": "Task already completed.",
+                "code": "NOK"
+            }
         }
     }
 
-    def update(self, request, *args, **kwargs):
-        try:
-            instance = ScheduledTodoTask.objects.get(pk=kwargs['pk'])
-        except ScheduledTodoTask.DoesNotExist:
-            raise
-
-        history = instance.todotaskhistory_set.first()
-
-        if history and history.completed:
-            return Response(self.UPDATE_NOK)
-
-        return super().update(request, *args, **kwargs)
-
-    COMPLETE_TASK_OK = {
-        "_operation_result": {
-            "message": "Task complete.",
-            "code": "OK"
-        }
-    }
-    COMPLETE_TASK_NOK = {
-        "_operation_result": {
-            "message": "Task already completed.",
-            "code": "NOK"
-        }
-    }
-
-    @action(detail=True)
-    def complete_task(self, request, pk=None):
+    def update(self, request, *args, pk=None, **kwargs):
         try:
             instance = ScheduledTodoTask.objects.get(pk=pk)
         except ScheduledTodoTask.DoesNotExist:
             raise
 
-        history = instance.todotaskhistory_set.first()  # type: TodoTaskReminder
+        if instance.completed:
+            return Response(self.messages["TASK_UPDATING_NOK"])
 
-        if history:
-            if not history.completed:
-                history.completed = now()
-                history.save()
-            else:
-                data = self.get_serializer(request).data
-                data.update(self.COMPLETE_TASK_NOK)
+        return super().update(request, *args, **kwargs)
 
-                return Response(data)
+    @action(detail=True)
+    def complete(self, *args, pk=None, **kwargs):
+        """This is only way to complete task."""
+        try:
+            instance = TodoTask.objects.get(pk=pk)
+        except TodoTask.DoesNotExist:
+            raise
+
+        if instance.completed:
+            data = self.get_serializer(instance).data
+            data.update(self.messages["TASK_COMPLETION_NOK"])
+
+            return Response(data)
         else:
-            TodoTaskReminder.objects.create(task=instance, completed=now())
+            instance.completed = now()
+            instance.save()
 
-        data = self.get_serializer(request).data
-        data.update(self.COMPLETE_TASK_OK)
+            data = self.get_serializer(instance).data
+            data.update(self.messages["TASK_COMPLETION_OK"])
 
-        return Response(data)
+            return Response(data)

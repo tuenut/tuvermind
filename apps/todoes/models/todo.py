@@ -6,17 +6,12 @@ from django.utils.translation import gettext_lazy as _
 
 
 class TodoTaskBase(models.Model):
-    class Meta:
-        abstract = True
-
     title = models.CharField(max_length=32, null=False, default="")
     description = models.CharField(max_length=2048, null=False, default="")
 
     created = models.DateTimeField(auto_now_add=True, null=False)
     updated = models.DateTimeField(auto_now=True, null=False)
     completed = models.DateTimeField(null=True)
-
-    reminders = models.ManyToManyField("TodoTaskReminder", )
 
     def __repr__(self):
         # for debug
@@ -29,6 +24,7 @@ class TodoTaskBase(models.Model):
 
 
 class TodoTask(TodoTaskBase):
+    reminders = models.ManyToManyField("TodoTaskReminder")
     planned_completion_date = models.DateField(null=True, default=None)
     planned_completion_time = models.TimeField(null=True, default=None)
 
@@ -42,20 +38,29 @@ class RepeatVariant(models.Model):
     Attributes
     ----------
     value: str
-        may be a number for types of [IN_MINUTES, IN_DAY_OF_MONTH, IN_DAY_OF_WEEK]
-            - IN_DAY_OF_MONTH like as `datetime.day`, if using day number larger, than amount of days in
-             month then use last day of month.
+        may be a number for types of [IN_MINUTES, IN_DAY_OF_MONTH,
+         IN_DAY_OF_WEEK]
+            - IN_DAY_OF_MONTH like as `datetime.day`, if using day number
+             larger, than amount of days in month then use last day of
+             month.
             - IN_DAY_OF_WEEK like as `datetime.isoweekday()`
-        for type of IN_IN_DATE_EVERY_YEAR uses format `MM.DD`. For example `12.31`.
+            - IN_IN_DATE_EVERY_YEAR uses format `MM.DD`. For example
+             `12.31`.
 
     Notes
     -----
     Task may repeat in:
-     - every N minutes (in UI must exist interface for switch to hours and days)
+     - every N minutes (in UI must exist interface for switch to hours
+      and days)
      - every N day each month
      - every year in `month.day` (like birthdays)
      - in day(s) of week
+
+    Reminders needs for notifications.
     """
+
+    # TODO Не корректные варианты повторения. Невозможно назначить "повторять каждый день в 9:30"
+    # Надо, пожалуй, вернуться к варианту с кроном-like и, возможно, наследованием(толькоабстрактным) от модели из celery.
 
     IN_MINUTES = 0
     IN_DAY_OF_MONTH = 1
@@ -71,21 +76,30 @@ class RepeatVariant(models.Model):
 
     type = models.IntegerField(choices=types)
     value = models.CharField(max_length=8, default=None, null=None)
+    reminders = models.ManyToManyField("TodoTaskReminder")
 
     def clean(self):
-        if self.type in [self.IN_MINUTES, self.IN_DAY_OF_MONTH, self.IN_DAY_OF_WEEK]:
+        if self.type in [
+            self.IN_MINUTES, self.IN_DAY_OF_MONTH, self.IN_DAY_OF_WEEK
+        ]:
             try:
                 value = int(self.value)
             except ValueError:
-                raise ValidationError(_("Value must be convertible into integer."))
+                raise ValidationError(_(
+                    "Value must be convertible into integer."
+                ))
 
             if self.type == self.IN_DAY_OF_MONTH:
                 if not (0 < value <= 31):
-                    raise ValidationError(_("Value must be in `0 < day <= 31`."))
+                    raise ValidationError(_(
+                        "Value must be in `0 < day <= 31`."
+                    ))
 
             elif self.type == self.IN_DAY_OF_WEEK:
                 if not (0 < value <= 7):
-                    raise ValidationError(_("Value must be in `0 < day <= 7`."))
+                    raise ValidationError(_(
+                        "Value must be in `0 < day <= 7`."
+                    ))
 
         elif self.type == self.IN_DATE_EVERY_YEAR:
             try:
@@ -96,16 +110,24 @@ class RepeatVariant(models.Model):
             try:
                 month = int(month)
             except ValueError:
-                raise ValidationError(_("Month must be convertible into integer."))
+                raise ValidationError(_(
+                    "Month must be convertible into integer."
+                ))
             if not (0 < month <= 12):
-                raise ValidationError(_("Month must be in `0 < month <= 12`."))
+                raise ValidationError(_(
+                    "Month must be in `0 < month <= 12`."
+                ))
 
             try:
                 day = int(day)
             except ValueError:
-                raise ValidationError(_("Day must be convertible into integer."))
+                raise ValidationError(_(
+                    "Day must be convertible into integer."
+                ))
             if not (0 < day <= 31):
-                raise ValidationError(_("Month must be in `0 < month <= 31`."))
+                raise ValidationError(_(
+                    "Month must be in `0 < month <= 31`."
+                ))
 
 
 class TodoTaskReminder(models.Model):
@@ -122,4 +144,4 @@ class TodoTaskReminder(models.Model):
     )
 
     value = models.IntegerField(default=0)
-    dimension = models.CharField(max_length=4, default=MINUTES, null=False)
+    units = models.CharField(max_length=4, default=MINUTES, null=False)
