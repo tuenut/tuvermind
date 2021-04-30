@@ -4,44 +4,33 @@ from django.db.models import Q
 from rest_framework import serializers
 
 from api.bases.serializers import LoggedSerializerWrapper
-from apps.todoes.models import TodoTask, ScheduledTodoTask, TodoTaskReminder, RepeatVariant
+from apps.todoes.models import TodoTask, TodoTaskReminder
 
-__all__ = ["TodoTaskSerializer", "ScheduledTodoTaskSerializer"]
+__all__ = ["TodoTaskSerializer", ]
 
 
 class RemindersSerializer(serializers.ModelSerializer):
-    units = serializers.ChoiceField(choices=TodoTaskReminder.DIMENSION_CHOICES)
+    units = serializers.ChoiceField(choices=TodoTaskReminder.CHOICES)
 
     class Meta:
         model = TodoTaskReminder
-        fields = ["value", "units"]
+        fields = ["id", "value", "units"]
 
 
-class RepeatsSerializer(serializers.ModelSerializer):
-    type = serializers.ChoiceField(RepeatVariant.types)
-    reminders = RemindersSerializer(many=True)
-
-    class Meta:
-        model = RepeatVariant
-        fields = ["type", "value", "reminders"]
-
-
-class TodoTaskBaseSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
+class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
     title = serializers.CharField(allow_blank=True)
     description = serializers.CharField(allow_blank=True)
+    status = serializers.ChoiceField(choices=TodoTask.CHOICES)
 
-
-class TodoTaskSerializer(TodoTaskBaseSerializer):
-    reminders = RemindersSerializer(many=True)
+    reminders = RemindersSerializer(many=True, required=False)
 
     class Meta:
         model = TodoTask
         fields = [
-            "id", "title", "description", "created", "updated",
-            "planned_completion_date", "planned_completion_time",
-            "completed", "reminders"
+            "id", "title", "description", "start_date", "end_date",
+            "status", "reminders", "created", "updated", "completed",
         ]
-        read_only_fields = ["created", "updated", "completed"]
+        read_only_fields = ["id", "created", "updated", "completed", "status"]
 
     @transaction.atomic
     def create(self, validated_data):
@@ -73,45 +62,5 @@ class TodoTaskSerializer(TodoTaskBaseSerializer):
             ))
 
         instance.save()
-
-        return instance
-
-
-class ScheduledTodoTaskSerializer(TodoTaskBaseSerializer):
-    title = serializers.CharField(allow_blank=True)
-    description = serializers.CharField(allow_blank=True)
-    repeats = RepeatsSerializer(many=True)
-
-    class Meta:
-        model = ScheduledTodoTask
-        fields = [
-            "id", "title", "description", "created", "updated",
-            "completed", "repeats",
-        ]
-        read_only_fields = ["created", "updated", "completed"]
-
-    @transaction.atomic
-    def create(self, validated_data):
-        repeats = validated_data.pop("repeats", [])
-        instance = super().create(validated_data)
-        instance = self._update_repeats(instance, repeats)
-
-        return instance
-
-    @transaction.atomic
-    def update(self, instance, validated_data):
-        repeats = validated_data.pop("repeats", [])
-        instance = self._update_repeats(instance, repeats)
-
-        return super().update(instance, validated_data)
-
-    def _update_repeats(self, instance, repeats):
-        instance.repeats.clear()
-
-        if repeats:
-            repeats_filter_query = Q()
-
-            for repeat_object in repeats:
-                reminder = ...
 
         return instance

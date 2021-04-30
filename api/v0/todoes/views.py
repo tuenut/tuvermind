@@ -5,25 +5,26 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.v0.todoes.serializers import TodoTaskSerializer, ScheduledTodoTaskSerializer
-from apps.todoes.models import TodoTask, TodoTaskReminder, ScheduledTodoTask
+from api.v0.todoes.serializers import TodoTaskSerializer
+from apps.todoes.models import TodoTask, TodoTaskReminder
 from libs.logging.logger2 import Logger
 
-__all__ = ["TodoTaskViewSet", "ScheduledTodoTaskViewSet"]
+__all__ = ["TodoTaskViewSet"]
 
 
 class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
     """
     Api usage example:
         {
-            "id": 3,
-            "title": "string",
-            "description": "string",
-            "created": "2020-10-31T16:18:14.729107Z",
-            "updated": "2020-10-31T20:19:32.242457Z",
-            "planned_completion_date": null,
-            "planned_completion_time": null,
-            "completed": null,
+            "id": int,
+            "title": string,
+            "description": string,
+            "created": DateTime,
+            "updated": DateTime,
+            "start_date": DateTime,
+            "end_date": DateTime,
+            "status": string,
+            "completed": DateTime,
             "reminders": [
                 {
                     "value": "1",
@@ -73,10 +74,7 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
     def update(self, request, *args, pk=None, **kwargs):
         """Prevent update already completed task."""
 
-        try:
-            instance = TodoTask.objects.get(pk=pk)
-        except TodoTask.DoesNotExist:
-            raise
+        instance = TodoTask.objects.get(pk=pk)
 
         if instance.completed:
             return Response(self.messages["TASK_UPDATING_NOK"])
@@ -86,10 +84,7 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
     @action(detail=True)
     def complete(self, *args, pk=None, **kwargs):
         """This is only way to complete task."""
-        try:
-            instance = TodoTask.objects.get(pk=pk)
-        except TodoTask.DoesNotExist:
-            raise
+        instance = TodoTask.objects.get(pk=pk)
 
         if instance.completed:
             data = self.get_serializer(instance).data
@@ -98,6 +93,7 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
             return Response(data)
         else:
             instance.completed = now()
+            instance.status = TodoTask.COMPLETED
             instance.save()
 
             data = self.get_serializer(instance).data
@@ -109,7 +105,7 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
     def today(self, *args, **kwargs):
         """Shortcut to get tasks list filtered by today date."""
 
-        today_or_none = Q(planned_completion_date=now()) | Q(planned_completion_date=None)
+        today_or_none = Q(start_date=now()) | Q(start_date=None)
         today_todoes = self.get_queryset().filter(today_or_none, completed=None)
 
         page = self.paginate_queryset(today_todoes)
@@ -120,67 +116,3 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
         serializer = self.get_serializer(today_todoes, many=True)
         return Response(serializer.data)
 
-
-class ScheduledTodoTaskViewSet(Logger, viewsets.ModelViewSet):
-    queryset = ScheduledTodoTask.objects.all()
-    serializer_class = ScheduledTodoTaskSerializer
-    permission_classes = [permissions.AllowAny]
-
-    filterset_fields = {}
-
-    ordering = ["created"]
-    ordering_fields = []
-
-    messages = {
-        "TASK_UPDATING_NOK": {
-            "_operation_result": {
-                "message": "Cant update completed task.",
-                "code": "NOK"
-            }
-        },
-        "TASK_COMPLETION_OK": {
-            "_operation_result": {
-                "message": "Task complete.",
-                "code": "OK"
-            }
-        },
-        "TASK_COMPLETION_NOK": {
-            "_operation_result": {
-                "message": "Task already completed.",
-                "code": "NOK"
-            }
-        }
-    }
-
-    def update(self, request, *args, pk=None, **kwargs):
-        try:
-            instance = ScheduledTodoTask.objects.get(pk=pk)
-        except ScheduledTodoTask.DoesNotExist:
-            raise
-
-        if instance.completed:
-            return Response(self.messages["TASK_UPDATING_NOK"])
-
-        return super().update(request, *args, **kwargs)
-
-    @action(detail=True)
-    def complete(self, *args, pk=None, **kwargs):
-        """This is only way to complete task."""
-        try:
-            instance = TodoTask.objects.get(pk=pk)
-        except TodoTask.DoesNotExist:
-            raise
-
-        if instance.completed:
-            data = self.get_serializer(instance).data
-            data.update(self.messages["TASK_COMPLETION_NOK"])
-
-            return Response(data)
-        else:
-            instance.completed = now()
-            instance.save()
-
-            data = self.get_serializer(instance).data
-            data.update(self.messages["TASK_COMPLETION_OK"])
-
-            return Response(data)
