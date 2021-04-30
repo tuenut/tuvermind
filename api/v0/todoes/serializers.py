@@ -20,7 +20,7 @@ class RemindersSerializer(serializers.ModelSerializer):
 class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
     title = serializers.CharField(allow_blank=True)
     description = serializers.CharField(allow_blank=True)
-    status = serializers.ChoiceField(choices=TodoTask.CHOICES)
+    status = serializers.ChoiceField(choices=TodoTask.CHOICES, required=False)
 
     reminders = RemindersSerializer(many=True, required=False)
 
