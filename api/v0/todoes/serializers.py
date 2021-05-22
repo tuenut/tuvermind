@@ -20,16 +20,22 @@ class RemindersSerializer(serializers.ModelSerializer):
 class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
     title = serializers.CharField(allow_blank=True)
     description = serializers.CharField(allow_blank=True)
-    status = serializers.ChoiceField(choices=TodoTask.CHOICES, required=False)
+    status = serializers.ChoiceField(
+        choices=TodoTask.CHOICES,
+        required=False,
+        read_only=True
+    )
 
     reminders = RemindersSerializer(many=True, required=False)
 
     class Meta:
         model = TodoTask
+
         fields = [
             "id", "title", "description", "start_date", "end_date",
             "status", "reminders", "created", "updated", "completed",
         ]
+
         read_only_fields = ["id", "created", "updated", "completed", "status"]
 
     @transaction.atomic

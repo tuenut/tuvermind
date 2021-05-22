@@ -1,0 +1,7 @@
+__all__ = ["SWAGGER_SETTINGS"]
+
+
+SWAGGER_SETTINGS = {
+    "DEFAULT_MODEL_RENDERING": "example",
+
+}

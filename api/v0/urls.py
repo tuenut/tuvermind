@@ -7,7 +7,7 @@ from api.v0.todoes.views import TodoTaskViewSet
 from api.v0.authentication.views import (
     TokenObtainPairSetCookieView, TokenRefreshView, TokenVerifyCustomView
 )
-
+from api.swagger import urlpatterns as swagger_urls
 
 app_name = 'api_v0'
 
@@ -30,4 +30,6 @@ urlpatterns = [
         TokenVerifyCustomView.as_view(),
         name='token_verify'
     ),
+
+    path('', include(swagger_urls)),
 ]

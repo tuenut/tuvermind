@@ -8,6 +8,7 @@ from .logging import *
 from .paths import *
 from .restframework import *
 from .secret import *
+from .swagger import *
 
 
 DEBUG = True
