@@ -17,25 +17,40 @@ from django.contrib import admin
 from django.urls import path, re_path
 from django.views.generic import RedirectView
 from django.conf.urls import url, include
+from django.conf.urls.static import static
+from django.conf import settings
 
-from rest_framework import routers
-
-from api.v0.urls import router as weather_router, urlpatterns as weather_urls
-from api.v0.authentication.urls import urlpatterns as auth_urls
+from api import urls as api_urls
 
 # Routers provide an easy way of automatically determining the URL conf.
 
-router = routers.DefaultRouter()
-router.registry.extend(weather_router.registry)
 
-favicon_path = re_path(r'^favicon\.ico$', RedirectView.as_view(url='/static/images/favicon.ico'), name='favicon')
+favicon_path = re_path(
+    r'^favicon\.ico$',
+    RedirectView.as_view(url='/static/images/favicon.ico'),
+    name='favicon'
+)
+
+# auth_url = url(
+#     r'api/auth',
+#     include('rest_framework.urls', namespace='rest_framework')
+# )
+
+admin_path = path('admin/', admin.site.urls)
+api_path = path('api/', include(api_urls))
 
 urlpatterns = [
     favicon_path,
-    path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
-    url(r'api/auth', include('rest_framework.urls', namespace='rest_framework')),
+    admin_path,
+    api_path,
+    # auth_url,
 ]
+urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
 
-urlpatterns.extend(weather_urls)
-urlpatterns.extend(auth_urls)
+if settings.DEBUG:
+    import debug_toolbar
+
+    urlpatterns = [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+        *urlpatterns,
+    ]

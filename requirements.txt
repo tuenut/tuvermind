@@ -10,3 +10,5 @@ django-filter
 pillow
 django-cors-headers
 djangorestframework-simplejwt
+drf-yasg
+django-debug-toolbar
