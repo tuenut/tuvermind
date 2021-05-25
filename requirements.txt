@@ -1,7 +1,7 @@
 django<3
 uwsgi
 django_celery_beat
-celery
+celery<5
 redis
 psycopg2-binary
 requests

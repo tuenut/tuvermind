@@ -6,50 +6,25 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.v0.todoes.serializers import TodoTaskSerializer
-from apps.todoes.models import TodoTask, TodoTaskReminder
 from libs.logging.logger2 import Logger
 
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg.inspectors import SwaggerAutoSchema
+from apps.todoes.models import TodoTask
+
+from api.v0.todoes.serializers import TodoTaskSerializer
+from api.v0.todoes.swaggerdocs import (
+    todoes_list_docs, todoes_create_docs, todoes_partial_update_docs,
+    todoes_destroy_docs, todoes_retrieve_docs, todoes_update_docs,
+    todoes_complete_docs, todoes_today_docs
+)
 
 __all__ = ["TodoTaskViewSet"]
 
 
-class ExcludesAnyParametersExceptPagintaionSwaggerAutoSchema(SwaggerAutoSchema):
-    def get_query_parameters(self):
-        return self.get_pagination_parameters()
-
-
-@method_decorator(
-    name="list",
-    decorator=swagger_auto_schema(operation_summary="Get list of todoes.")
-)
-@method_decorator(
-    name="create",
-    decorator=swagger_auto_schema(
-        operation_summary="Create new todo.",
-        operation_description="""\
-You can set title, description, dates of start and end task, also set of \
-reminders. Other parameters will set automatically.
-For change status - use special actions."""
-    )
-)
-@method_decorator(
-    name="partial_update",
-    decorator=swagger_auto_schema(
-        operation_summary="Partial update TODO.",
-        operation_description="You can not change a completed task."
-    )
-)
-@method_decorator(
-    name="destroy",
-    decorator=swagger_auto_schema(operation_summary="Delete TODO.")
-)
-@method_decorator(
-    name="retrieve",
-    decorator=swagger_auto_schema(operation_summary="Retrieve TODO by `id`.")
-)
+@method_decorator(name="list", decorator=todoes_list_docs)
+@method_decorator(name="create", decorator=todoes_create_docs)
+@method_decorator(name="destroy", decorator=todoes_destroy_docs)
+@method_decorator(name="retrieve", decorator=todoes_retrieve_docs)
+@method_decorator(name="partial_update", decorator=todoes_partial_update_docs)
 class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
     """That view represents TODOes.
 
@@ -97,10 +72,7 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
         }
     }
 
-    @swagger_auto_schema(
-        operation_summary="Edit task.",
-        operation_description="You can not change a completed task."
-    )
+    @todoes_update_docs
     def update(self, request, *args, pk=None, **kwargs):
         instance = TodoTask.objects.get(pk=pk)
 
@@ -109,12 +81,9 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
 
         return super().update(request, *args, **kwargs)
 
-    @swagger_auto_schema(
-        operation_summary="This is the only way to complete task.",
-        operation_description=""
-    )
+    @todoes_complete_docs
     @action(detail=True)
-    def complete(self, *args, pk=None, **kwargs):
+    def complete(self, request, *args, pk=None, **kwargs):
         instance = TodoTask.objects.get(pk=pk)
 
         if instance.completed:
@@ -132,13 +101,9 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
 
             return Response(data)
 
-    @swagger_auto_schema(
-        auto_schema=ExcludesAnyParametersExceptPagintaionSwaggerAutoSchema,
-        operation_summary="Shortcut to get tasks list filtered by today date.",
-        operation_description=""
-    )
+    @todoes_today_docs
     @action(detail=False)
-    def today(self, *args, **kwargs):
+    def today(self, request, *args, **kwargs):
         today_todoes = self.get_queryset() \
             .filter(Q(start_date=now()) | Q(start_date=None), completed=None)
 

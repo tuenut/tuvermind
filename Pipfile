@@ -6,7 +6,7 @@ url = "https://pypi.org/simple"
 [packages]
 Django = "<3"
 uWSGI = "*"
-celery = "*"
+celery = "<5"
 redis = "*"
 psycopg2-binary = "*"
 requests = "*"
