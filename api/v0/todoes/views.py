@@ -35,6 +35,21 @@ reminders. Other parameters will set automatically.
 For change status - use special actions."""
     )
 )
+@method_decorator(
+    name="partial_update",
+    decorator=swagger_auto_schema(
+        operation_summary="Partial update TODO.",
+        operation_description="You can not change a completed task."
+    )
+)
+@method_decorator(
+    name="destroy",
+    decorator=swagger_auto_schema(operation_summary="Delete TODO.")
+)
+@method_decorator(
+    name="retrieve",
+    decorator=swagger_auto_schema(operation_summary="Retrieve TODO by `id`.")
+)
 class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
     """That view represents TODOes.
 
@@ -45,6 +60,7 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
     # TODO: remove notes below and remove support that from code
     # - Reminder value can be int or string convertible to int.
     # - Reminder units can be one of "min", "hour", "day", "week"
+    # TODO add `archive` action
 
     queryset = TodoTask.objects.all()
     serializer_class = TodoTaskSerializer
@@ -81,12 +97,11 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
         }
     }
 
+    @swagger_auto_schema(
+        operation_summary="Edit task.",
+        operation_description="You can not change a completed task."
+    )
     def update(self, request, *args, pk=None, **kwargs):
-        """Edit task.
-
-        You can not change a completed task.
-        """
-
         instance = TodoTask.objects.get(pk=pk)
 
         if instance.completed:
@@ -94,10 +109,12 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
 
         return super().update(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        operation_summary="This is the only way to complete task.",
+        operation_description=""
+    )
     @action(detail=True)
     def complete(self, *args, pk=None, **kwargs):
-        """This is the only way to complete task."""
-
         instance = TodoTask.objects.get(pk=pk)
 
         if instance.completed:
@@ -115,11 +132,13 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
 
             return Response(data)
 
-    @swagger_auto_schema(auto_schema=ExcludesAnyParametersExceptPagintaionSwaggerAutoSchema)
+    @swagger_auto_schema(
+        auto_schema=ExcludesAnyParametersExceptPagintaionSwaggerAutoSchema,
+        operation_summary="Shortcut to get tasks list filtered by today date.",
+        operation_description=""
+    )
     @action(detail=False)
     def today(self, *args, **kwargs):
-        """Shortcut to get tasks list filtered by today date."""
-
         today_todoes = self.get_queryset() \
             .filter(Q(start_date=now()) | Q(start_date=None), completed=None)
 

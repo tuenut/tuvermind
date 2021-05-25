@@ -29,7 +29,7 @@ class TokenVerifyCustomView(TokenVerifyView):
     authentication_classes = [JWTAuthentication, JWTAuthenticationWithCookie]
     permission_classes = [AllowAny, ]
 
-    def get(self, request, format=None):
+    def get(self, request, *args, **kwargs):
         return Response({
             'userName': str(request.user),
             'message': "Verified by cookie." if not isinstance(request.user, AnonymousUser) else "Unauthenticated!"

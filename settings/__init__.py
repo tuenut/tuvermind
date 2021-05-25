@@ -16,7 +16,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = True
 
-ROOT_URLCONF = 'apps.urls'
+ROOT_URLCONF = 'settings.urls'
 WSGI_APPLICATION = 'apps.wsgi.application'
 
 # TODO find out how use urls like `/d/static/`

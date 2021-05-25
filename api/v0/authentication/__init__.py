@@ -3,9 +3,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class JWTAuthenticationWithCookie(JWTAuthentication):
     def authenticate(self, request):
-        print("!!! JWTAuthenticationWithCookie !!!")
-
         raw_token = request._request.COOKIES.get("drfjwt_access_token", None)
+
         if raw_token is None:
             return None
 
