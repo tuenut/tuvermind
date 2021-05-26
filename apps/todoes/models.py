@@ -15,33 +15,35 @@ class TodoTask(models.Model):
      celery notification tasks and UI.
     - default status on creation todo-task must be PENDING.
     """
-    
-    title = models.CharField(max_length=32, null=False, default="")
-    description = models.CharField(max_length=2048, null=False, default="")
-
-    start_date = models.DateTimeField(null=True, default=None)
-    end_date = models.DateTimeField(null=True, default=None)
-
-    created = models.DateTimeField(auto_now_add=True, null=False)
-    updated = models.DateTimeField(auto_now=True, null=False)
-
-    completed = models.DateTimeField(null=True)
 
     PENDING = "pending"  # must be set on create automatically
     IN_PROCESS = "inProcess"  # can be set by periodic task or by user
     COMPLETED = "completed"  # can be by user
     ARCHIVED = "archived"  # can be by user
     EXPIRED = "expired"  # must be set by periodic task
+    SUSPENSE = "suspense"
 
     CHOICES = [
         (PENDING, PENDING),
         (IN_PROCESS, IN_PROCESS),
         (COMPLETED, COMPLETED),
         (ARCHIVED, ARCHIVED),
-        (EXPIRED, EXPIRED)
+        (EXPIRED, EXPIRED),
+        (SUSPENSE, SUSPENSE)
     ]
 
     DEFAULT = PENDING
+
+    title = models.CharField(max_length=32, null=False, default="")
+    description = models.CharField(max_length=2048, null=False, default="")
+
+    start_date = models.DateTimeField(null=True, default=None)
+    duration = models.IntegerField(null=True, default=None)
+
+    created = models.DateTimeField(auto_now_add=True, null=False)
+    updated = models.DateTimeField(auto_now=True, null=False)
+
+    completed = models.DateTimeField(null=True)
 
     status = models.CharField(default=DEFAULT, choices=CHOICES, max_length=16)
 

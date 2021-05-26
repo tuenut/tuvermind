@@ -32,7 +32,7 @@ class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
         model = TodoTask
 
         fields = [
-            "id", "title", "description", "start_date", "end_date",
+            "id", "title", "description", "start_date", "duration",
             "status", "reminders", "created", "updated", "completed",
         ]
 
