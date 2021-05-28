@@ -25,6 +25,8 @@ class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
         required=False,
         read_only=True
     )
+    start_date = serializers.DateField(required=True, )
+    start_time = serializers.TimeField(required=False)
 
     reminders = RemindersSerializer(many=True, required=False)
 
@@ -32,8 +34,9 @@ class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
         model = TodoTask
 
         fields = [
-            "id", "title", "description", "start_date", "duration",
-            "status", "reminders", "created", "updated", "completed",
+            "id", "title", "description", "start_date", "start_time",
+            "duration", "status", "reminders", "created", "updated",
+            "completed",
         ]
 
         read_only_fields = ["id", "created", "updated", "completed", "status"]

@@ -37,7 +37,8 @@ class TodoTask(models.Model):
     title = models.CharField(max_length=32, null=False, default="")
     description = models.CharField(max_length=2048, null=False, default="")
 
-    start_date = models.DateTimeField(null=True, default=None)
+    start_date = models.DateField(null=True, default=None)
+    start_time = models.TimeField(null=True, default=None)
     duration = models.IntegerField(null=True, default=None)
 
     created = models.DateTimeField(auto_now_add=True, null=False)
