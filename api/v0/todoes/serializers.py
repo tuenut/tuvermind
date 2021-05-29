@@ -10,11 +10,9 @@ __all__ = ["TodoTaskSerializer", ]
 
 
 class RemindersSerializer(serializers.ModelSerializer):
-    units = serializers.ChoiceField(choices=TodoTaskReminder.CHOICES)
-
     class Meta:
         model = TodoTaskReminder
-        fields = ["id", "value", "units"]
+        fields = ["id", "when"]
 
 
 class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
@@ -56,19 +54,19 @@ class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
 
         return super().update(instance, validated_data)
 
-    def _update_reminders(self, instance, reminders):
-        instance.reminders.clear()
+    def _update_reminders(self, instance, new_reminders):
+        new_reminders_set = set(map(lambda r: r["when"], new_reminders))
+        old_reminders_set = set(
+            instance.reminders.values_list("when", flat=True))
 
-        if reminders:
-            reminders_filter_query = Q()
+        instance.reminders \
+            .filter(when__in=old_reminders_set - new_reminders_set) \
+            .delete()
 
-            for reminder in reminders:
-                TodoTaskReminder.objects.get_or_create(**reminder)
-                reminders_filter_query |= Q(**reminder)
-
-            instance.reminders.add(*TodoTaskReminder.objects.filter(
-                reminders_filter_query
-            ))
+        instance.reminders.add(*list(map(
+            lambda when: TodoTaskReminder.objects.create(when=when),
+            list(new_reminders_set - old_reminders_set)
+        )))
 
         instance.save()
 

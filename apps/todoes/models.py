@@ -53,7 +53,6 @@ class TodoTask(models.Model):
     # TODO add cron-like schedule
 
     def __repr__(self):
-        # for debug
         todo = {
             "id": self.id,
             "title": self.title,
@@ -64,17 +63,7 @@ class TodoTask(models.Model):
 
 
 class TodoTaskReminder(models.Model):
-    MINUTES = "min"
-    HOURS = "hour"
-    DAYS = "day"
-    WEEKS = "week"
+    when = models.DateTimeField(null=True, default=None)
 
-    CHOICES = (
-        (MINUTES, "Minutes"),
-        (HOURS, "Hours"),
-        (DAYS, "Days"),
-        (WEEKS, "Weeks")
-    )
-
-    value = models.IntegerField(default=0)
-    units = models.CharField(max_length=4, default=MINUTES, null=False)
+    def __repr__(self):
+        return str(self.when)

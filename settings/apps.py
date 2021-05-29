@@ -17,4 +17,6 @@ INSTALLED_APPS = [
     'apps.todoes',
     'drf_yasg',
     'debug_toolbar',
+
+    "django_extensions"
 ]

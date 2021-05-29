@@ -32,9 +32,6 @@ class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
     You can set a planned start date for the task, reminders before starting.
 
     """
-    # TODO: remove notes below and remove support that from code
-    # - Reminder value can be int or string convertible to int.
-    # - Reminder units can be one of "min", "hour", "day", "week"
     # TODO add `archive` action
 
     queryset = TodoTask.objects.all()
