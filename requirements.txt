@@ -1,14 +1,17 @@
-django<3
-uwsgi
-django_celery_beat
-celery<5
-redis
-psycopg2-binary
-requests
-djangorestframework
-django-filter
-pillow
-django-cors-headers
-djangorestframework-simplejwt
+django==3.2.*
+djangorestframework==3.13.*
+djangorestframework-simplejwt==5.1.*
+django-filter==21.1.*
 drf-yasg
+
+celery==4.4.6
+django_celery_beat==2.2.0 # ???
+
+requests==2.27.*
+pillow==9.1.*
+
+# uwsgi
+redis==4.2.*
+psycopg2-binary==2.9.*
+
 django-debug-toolbar
