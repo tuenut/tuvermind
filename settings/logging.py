@@ -2,6 +2,8 @@ import logging
 
 __all__ = ["LOG_LEVEL", "LOGGING"]
 
+from settings.paths import LOG_DIR
+
 LOG_LEVEL = logging.DEBUG
 LOGGING = {
     'version': 1,
@@ -36,7 +38,7 @@ LOGGING = {
             'when': 'W6',
             'interval': 1,
             'backupCount': 10,
-            'filename': 'default.log'
+            'filename': f'{LOG_DIR}/default.log'
         },
     }
 }

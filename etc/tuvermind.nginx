@@ -1,5 +1,5 @@
 upstream django {
-    server unix:///tmp/tuvermind.uwsgi.django.sock;
+    server webserver:8000;
     }
 
 server {

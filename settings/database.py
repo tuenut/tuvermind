@@ -8,7 +8,7 @@ DATABASES = {
         'NAME': 'tuvermind',
         'USER': DB_DEFAULT_USER,
         'PASSWORD': DB_DEFAULT_PASSWORD,
-        'HOST': 'localhost',
+        'HOST': 'tuvermind-db',
         'PORT': '5432',
     }
 }

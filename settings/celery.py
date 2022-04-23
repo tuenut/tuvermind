@@ -4,8 +4,8 @@ __all__ = [
     "CELERY_TIMEZONE"
 ]
 
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_BROKER_URL = 'redis://tuvermind-redis:6379'
+CELERY_RESULT_BACKEND = 'redis://tuvermind-redis:6379'
 CELERY_TASK_RESULT_EXPIRES = 600
 CELERY_ACCEPT_CONTENT = ['application/json', 'application/x-python-serialize']
 CELERY_RESULT_SERIALIZER = 'json'

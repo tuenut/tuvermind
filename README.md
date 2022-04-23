@@ -10,4 +10,9 @@ Preparation for start from scratch:
 - `python3 manage.py migrate`
 - `python3 manage.py collectstatic`
 
+## Setup development environment with docker-compose
+```shell
+cd etc/dev.env
+docker build -t tuvermind .
 
+```

@@ -15,3 +15,5 @@ celerybeat-schedule
 #media/
 
 settings/secret.py
+
+etc/dev.env/.dev.env
