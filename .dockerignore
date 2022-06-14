@@ -4,6 +4,3 @@
 .ipynb_checkpoints/
 .pycharm_venv/
 *__pycache__*
-*.pyc
-etc/dev.env/.dev.env
-_notebooks

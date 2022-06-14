@@ -1,8 +1,9 @@
 import logging
 
-__all__ = ["LOG_LEVEL", "LOGGING"]
+from settings.django import LOG_DIR
 
-from settings.paths import LOG_DIR
+
+__all__ = ["LOG_LEVEL", "LOGGING"]
 
 LOG_LEVEL = logging.DEBUG
 LOGGING = {

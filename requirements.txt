@@ -4,8 +4,8 @@ djangorestframework-simplejwt==5.1.*
 django-filter==21.1.*
 drf-yasg
 
-celery==4.4.6
-django_celery_beat==2.2.0 # ???
+celery==5.2.*
+django_celery_beat==2.2.*
 
 requests==2.27.*
 pillow==9.1.*

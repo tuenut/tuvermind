@@ -1,8 +1,9 @@
 import os
 
-from settings.secret import API_KEY
 
 __all__ = ['URL_FORECAST_5_DAYS', 'URL_CITY_LIST', 'HOURS_TO_DISPLAY', 'URL_IMAGE_PREFIX', ]
+
+API_KEY = os.getenv("TUVERMIND_API_KEY")
 
 URL_FORECAST_5_DAYS = 'http://api.openweathermap.org/data/2.5/forecast?q=bryansk,RU&appid=%s' % API_KEY
 URL_CITY_LIST = 'http://bulk.openweathermap.org/sample/city.list.json.gz'

@@ -20,6 +20,8 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.conf import settings
 
+import settings.debug
+import settings.django
 from api import urls as api_urls
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -45,9 +47,9 @@ urlpatterns = [
     api_path,
     # auth_url,
 ]
-urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
+urlpatterns.extend(static(settings.django.MEDIA_URL, document_root=settings.django.MEDIA_ROOT))
 
-if settings.DEBUG:
+if settings.debug.DEBUG:
     import debug_toolbar
 
     urlpatterns = [
