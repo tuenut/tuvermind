@@ -62,7 +62,12 @@ class OWMWeather(models.Model):
     owm_id = models.IntegerField(null=False, unique=True)
     name = models.CharField(null=True, default=None, max_length=64)
     description = models.CharField(null=True, default=None, max_length=128)
-    icon = models.ImageField(upload_to=weather_icon_path, storage=OverwriteStorage(), null=True, default=None)
+    icon = models.ImageField(
+        upload_to=weather_icon_path,
+        storage=OverwriteStorage(),
+        null=True,
+        default=None
+    )
 
 
 

@@ -4,7 +4,8 @@ import logging.config
 import logging.handlers
 import os
 
-from settings import LOG_DIR, LOGGING, LOG_LEVEL
+from settings import LOGGING, LOG_LEVEL
+from settings.django import LOG_DIR
 
 
 class Logger(type):
