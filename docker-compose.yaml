@@ -28,6 +28,7 @@ services:
     volumes:
       - ./src:/opt/tuvermind/
       - /tmp/logs/:/var/log/tuvermind/
+    env_file: .env
     entrypoint: uwsgi --ini uwsgi.ini
   #    celery:
   #        container_name: tuvermind-celery
