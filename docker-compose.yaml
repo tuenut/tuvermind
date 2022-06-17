@@ -1,0 +1,80 @@
+version: "3.4"
+
+services:
+  database:
+    image: timescale/timescaledb:latest-pg12
+    volumes:
+      - tuvermind-db:/var/lib/postgresql/data
+    expose:
+      - 5432
+    ports:
+      - "5433:5433"
+    env_file: .env
+  redis:
+    image: redis
+    expose:
+      - 6379
+    ports:
+      - "127.0.0.1:16379:6379"
+  api:
+    depends_on:
+      - database
+      - redis
+    image: tuvermind
+    volumes:
+      - ./src:/opt/tuvermind/
+      - /tmp/logs/:/var/log/tuvermind/
+    entrypoint: uwsgi --ini etc/uwsgi.ini
+  #    celery:
+  #        container_name: tuvermind-celery
+  #        depends_on:
+  #            - database
+  #            - redis
+  #        image: tuvermind
+  #        volumes:
+  #            - ../../:/tuvermind/
+  #            - tuvermind-celery-logs:/tuvermind/.logs/
+  #        entrypoint: sh ./etc/start_celery.sh
+  #    celery-beat:
+  #        container_name: tuvermind-celerybeat
+  #        depends_on:
+  #            - database
+  #            - redis
+  #        image: tuvermind
+  #        volumes:
+  #            - ../../:/tuvermind/
+  #            - tuvermind-celery-logs:/tuvermind/.logs/
+  #        entrypoint: sh ./etc/start_celerybeat.sh
+  #        spa:
+  #            depends_on:
+  #                - webserver
+  #            image: tuvermind-spa
+  #            build:
+  #                target: development
+  #            expose:
+  #                - 3000
+  #            volumes:
+  #                - ../tuvermind_react_spa_ui/:./
+  #            entrypoint: ["npm", "run", "start"]
+  #    jupyter:
+  #        container_name: tuvermind-jupyter
+  #        depends_on:
+  #            - database
+  #            - redis
+  #        image: tuvermind
+  #        volumes:
+  #            - ./:/tuvermind/
+  #            - tuvermind-jupyter-logs:/tuvermind/.logs/
+  #        entrypoint: python3 manage.py shell_plus --notebook
+  nginx:
+    depends_on:
+      - api
+    image: nginx
+    ports:
+      - "127.0.0.1:80:80"
+      - "127.0.0.1:443:443"
+    volumes:
+      - ./tuvermind.nginx:/etc/nginx/conf.d/default.conf
+
+volumes:
+  tuvermind-db:

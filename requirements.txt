@@ -1,3 +1,5 @@
+uwsgi
+
 django==3.2.*
 djangorestframework==3.13.*
 djangorestframework-simplejwt==5.1.*
@@ -10,7 +12,6 @@ django_celery_beat==2.2.*
 requests==2.27.*
 pillow==9.1.*
 
-# uwsgi
 redis==4.2.*
 psycopg2-binary==2.9.*
 
