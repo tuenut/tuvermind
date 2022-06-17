@@ -6,7 +6,7 @@ from .django import *
 from .logging import *
 from .restframework import *
 from .swagger import *
-from openweathermap import *
+from .openweathermap import *
 
 ALLOWED_HOSTS = ['*']
 

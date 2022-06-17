@@ -1,6 +1,4 @@
 .git/
 .gitignore
 .idea/
-.ipynb_checkpoints/
-.pycharm_venv/
 *__pycache__*

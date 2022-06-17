@@ -21,10 +21,14 @@ services:
       - database
       - redis
     image: tuvermind
+    expose:
+      - 8000
+    ports:
+      - "127.0.0.1:18000:8000"
     volumes:
       - ./src:/opt/tuvermind/
       - /tmp/logs/:/var/log/tuvermind/
-    entrypoint: uwsgi --ini etc/uwsgi.ini
+    entrypoint: uwsgi --ini uwsgi.ini
   #    celery:
   #        container_name: tuvermind-celery
   #        depends_on:
@@ -75,6 +79,7 @@ services:
       - "127.0.0.1:443:443"
     volumes:
       - ./tuvermind.nginx:/etc/nginx/conf.d/default.conf
+      - ./etc/favicon.png:/var/www/tuvermind/favicon.png
 
 volumes:
   tuvermind-db:
