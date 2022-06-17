@@ -64,3 +64,4 @@ class GetDataByRequests:
 
     def log_data(self):
         # self.logger.info(pp.pformat(self.response))
+        pass
