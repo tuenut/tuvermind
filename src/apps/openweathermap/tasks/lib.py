@@ -10,11 +10,10 @@ from settings.openweathermap import (
     URL_IMAGE_PREFIX, SYMBOL_H, PATH, SYMBOL_W, ALIGN, HOURS_TO_DISPLAY, URL_FORECAST_5_DAYS, URL_CITY_LIST
 )
 from libs.utils.network import GetDataByRequests
-from libs.logging.logger import Logger
 from apps.openweathermap.models import OWMCities, OWMData, OWMWeather
 
 
-class Weather(metaclass=Logger):
+class Weather:
     getter = GetDataByRequests()
 
     def get(self, ):
@@ -76,7 +75,7 @@ class Weather(metaclass=Logger):
             instance.save()
 
 
-class Cities(metaclass=Logger):
+class Cities:
     getter = GetDataByRequests()
 
     def get(self, ):
@@ -95,7 +94,7 @@ class Cities(metaclass=Logger):
             instance.save()
 
 
-class UpdateConkyConfig(metaclass=Logger):
+class UpdateConkyConfig:
     # TODO: DEPRECATED
 
     def __init__(self):

@@ -1,9 +1,7 @@
 from django.db import transaction
-from django.db.models import Q
 
 from rest_framework import serializers
 
-from api.bases.serializers import LoggedSerializerWrapper
 from apps.todoes.models import TodoTask, TodoTaskReminder
 
 __all__ = ["TodoTaskSerializer", ]
@@ -15,7 +13,7 @@ class RemindersSerializer(serializers.ModelSerializer):
         fields = ["id", "when"]
 
 
-class TodoTaskSerializer(LoggedSerializerWrapper, serializers.ModelSerializer):
+class TodoTaskSerializer(serializers.ModelSerializer):
     title = serializers.CharField(allow_blank=True)
     description = serializers.CharField(allow_blank=True)
     status = serializers.ChoiceField(

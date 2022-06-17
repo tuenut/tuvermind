@@ -6,7 +6,6 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from libs.logging.logger2 import Logger
 
 from apps.todoes.models import TodoTask
 
@@ -25,7 +24,7 @@ __all__ = ["TodoTaskViewSet"]
 @method_decorator(name="destroy", decorator=todoes_destroy_docs)
 @method_decorator(name="retrieve", decorator=todoes_retrieve_docs)
 @method_decorator(name="partial_update", decorator=todoes_partial_update_docs)
-class TodoTaskViewSet(Logger, viewsets.ModelViewSet):
+class TodoTaskViewSet(viewsets.ModelViewSet):
     """That view represents TODOes.
 
     TODOes are tasks that you would like to complete later.

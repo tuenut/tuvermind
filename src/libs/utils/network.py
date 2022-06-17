@@ -1,13 +1,11 @@
 import requests
 
-from libs.logging.logger import Logger
-
 import pprint
 
 pp = pprint.PrettyPrinter(indent=4, depth=10, width=128)
 
 
-class GetDataByRequests(metaclass=Logger):
+class GetDataByRequests:
     USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
     proxies_list = []
     response = None
@@ -45,16 +43,17 @@ class GetDataByRequests(metaclass=Logger):
             self.response = requests.get(url, headers=headers, timeout=5, )
         except Exception as e:
             exc_info = e.__reduce__()
-            self.logger.debug('Can not direct connect to <%s>\n<%s> <%s>', url, exc_info[0], exc_info[1])
+            # self.logger.debug('Can not direct connect to <%s>\n<%s> <%s>', url, exc_info[0], exc_info[1])
             if self.proxies_list:
                 for proxy in self.proxies_list:
                     try:
                         self.response = requests.get(url, headers=headers, timeout=5, proxies=proxy)
                     except:
-                        self.logger.debug(
-                            'Can not through proxy connect to <%s>\n<%s> <%s>',
-                            url, exc_info[0], exc_info[1]
-                        )
+                        # self.logger.debug(
+                        #     'Can not through proxy connect to <%s>\n<%s> <%s>',
+                        #     url, exc_info[0], exc_info[1]
+                        # )
+                        pass
                     else:
                         break
 
@@ -64,4 +63,4 @@ class GetDataByRequests(metaclass=Logger):
             return False
 
     def log_data(self):
-        self.logger.info(pp.pformat(self.response))
+        # self.logger.info(pp.pformat(self.response))
