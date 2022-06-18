@@ -18,10 +18,9 @@ from django.urls import path, re_path
 from django.views.generic import RedirectView
 from django.conf.urls import url, include
 from django.conf.urls.static import static
-from django.conf import settings
 
-import settings.debug
-import settings.django
+import settings
+import settings.paths
 from api import urls as api_urls
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -47,9 +46,9 @@ urlpatterns = [
     api_path,
     # auth_url,
 ]
-urlpatterns.extend(static(settings.django.MEDIA_URL, document_root=settings.django.MEDIA_ROOT))
+urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.paths.MEDIA_ROOT))
 
-if settings.debug.DEBUG:
+if settings.DEBUG:
     import debug_toolbar
 
     urlpatterns = [
