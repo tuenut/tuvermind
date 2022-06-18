@@ -15,19 +15,19 @@ server {
     location / {
         rewrite ^$ index.html break;
         root /var/www/tuvermind/spa/;
-        }
+    }
     location ~ ^/api/(.*)? {
         uwsgi_pass django;
         include /etc/nginx/uwsgi_params;
-        }
+    }
     location ~ ^/admin/(.*)? {
         uwsgi_pass django;
         include /etc/nginx/uwsgi_params;
-        }
+    }
     location /dstatic {
         alias /var/www/tuvermind/static/;
-        }
+    }
     location /dmedia {
         alias /var/www/tuvermind/media/;
-        }
     }
+}
