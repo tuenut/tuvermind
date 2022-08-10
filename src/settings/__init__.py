@@ -1,5 +1,4 @@
-import os
-
+from .environment import *
 from .apps import *
 from .auth import *
 from .celery import *
@@ -18,8 +17,6 @@ WSGI_APPLICATION = 'apps.wsgi.application'
 ROOT_URLCONF = 'settings.urls'
 
 ALLOWED_HOSTS = ['*']
-DEBUG = bool(os.getenv("TUVERMIND_DEBUG"))
-SECRET_KEY = os.getenv("TUVERMIND_SECRET_KEY", None)
 
 STATIC_URL = '/dstatic/'
 MEDIA_URL = '/dmedia/'

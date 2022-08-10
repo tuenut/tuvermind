@@ -4,7 +4,7 @@ from celery import shared_task
 
 from libs.utils.network import GetDataByRequests
 from settings.openweathermap import URL_FORECAST_5_DAYS
-from apps.openweathermap.tasks.lib import Weather, Cities, UpdateConkyConfig
+from apps.openweathermap.tasks.lib import Weather, Cities
 
 
 @shared_task
@@ -22,8 +22,3 @@ def get_weather_task():
 @shared_task
 def get_cities_task():
     Cities().get()
-
-
-@shared_task
-def conky_task():
-    UpdateConkyConfig()

@@ -1,28 +1,18 @@
 import os
 
+from src.settings.environment import API_KEY
 
 __all__ = [
     "URL_FORECAST_5_DAYS", "URL_CITY_LIST", "HOURS_TO_DISPLAY",
     "URL_IMAGE_PREFIX",
 ]
 
-API_KEY = os.getenv("TUVERMIND_API_KEY")
-
-URL_FORECAST_5_DAYS =\
+URL_FORECAST_5_DAYS = \
     f"https://api.openweathermap.org/data/2.5/forecast" \
     f"?q=bryansk,RU&appid={API_KEY}"
 URL_CITY_LIST = "https://bulk.openweathermap.org/sample/city.list.json.gz"
 URL_IMAGE_PREFIX = "https://openweathermap.org/img/w/%s.png"
 
-# TODO remove conky functionality
-# conky
-PATH = os.path.expanduser("~/.conky/openweathermap/")
-ICONS_PATH = os.path.join(PATH, "icons")
-MAX_WIDTH = 1200
-ICON_WIDTH = 50
-SYMBOL_W = 8
-SYMBOL_H = 14
-ALIGN = 20
 HOURS_TO_DISPLAY = ["06:00", "12:00", "18:00"]
 ICONS = {
     "01d.png": "clear sky",

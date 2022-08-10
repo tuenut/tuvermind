@@ -1,6 +1,6 @@
 import logging
 
-from settings.paths import LOG_DIR
+from .paths import LOG_DIR
 
 
 __all__ = ["LOG_LEVEL"]
