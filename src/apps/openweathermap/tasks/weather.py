@@ -1,15 +1,21 @@
-import gzip
+from __future__ import absolute_import, unicode_literals
 
 from datetime import datetime as dt
-from json import loads
 from io import BytesIO
+from json import loads
 
+from celery import shared_task
 from django.utils import timezone
 
-from settings.openweathermap import URL_IMAGE_PREFIX, URL_FORECAST_5_DAYS, \
-    URL_CITY_LIST
-from libs.utils.network import GetDataByRequests
 from apps.openweathermap.models import OWMCities, OWMData, OWMWeather
+from apps.openweathermap.tasks.cities import Cities
+from libs.utils.network import GetDataByRequests
+from settings import URL_FORECAST_5_DAYS, URL_IMAGE_PREFIX
+
+
+@shared_task
+def get_weather_task():
+    Weather().get()
 
 
 class Weather:
@@ -72,24 +78,4 @@ class Weather:
             except KeyError:
                 instance.rain_3h = None
 
-            instance.save()
-
-
-class Cities:
-    getter = GetDataByRequests()
-
-    def get(self, ):
-        self.getter.get_data(URL_CITY_LIST)
-        self.data = loads(gzip.decompress(self.getter.response.content))
-        self.save(self.data)
-
-    @staticmethod
-    def save(data, ):
-        for city in data:
-            instance, created = OWMCities.objects \
-                .get_or_create(owm_id=city['id'])
-            instance.name = city['name']
-            instance.country = city['country']
-            instance.latitude = city['coord']['lat']
-            instance.longitude = city['coord']['lon']
             instance.save()

@@ -3,15 +3,16 @@ from django.db import models
 from libs.utils.djangomodelutils import OverwriteStorage
 
 
-__all__ = ['OWMData', 'OWMCities', 'OWMWeather']
+__all__ = ["OWMData", "OWMCities", "OWMWeather"]
 
 
 class OWMData(models.Model):
     timestamp = models.DateTimeField(null=True, default=None)
     city = models.ForeignKey(
-        'OWMCities',
+        "OWMCities",
         null=True, default=None,
-        related_query_name='data2city', related_name='data2city',
+        related_query_name="data2city",
+        related_name="data2city",
         on_delete=models.DO_NOTHING
     )
     temperature = models.FloatField(null=True, default=None)
@@ -20,9 +21,10 @@ class OWMData(models.Model):
     pressure = models.FloatField(null=True, default=None)
     humidity = models.FloatField(null=True, default=None)
     weather = models.ForeignKey(
-        'OWMWeather',
+        "OWMWeather",
         null=True, default=None,
-        related_query_name='data2weather', related_name='data2weather',
+        related_query_name="data2weather", 
+        related_name="data2weather",
         on_delete=models.DO_NOTHING
     )
     clouds = models.FloatField(null=True, default=None)
@@ -55,7 +57,7 @@ class OWMCities(models.Model):
 
 
 def weather_icon_path(instance, filename):
-    return 'weather/icons/openweathermap/{filename}.png'.format(filename=filename)
+    return f"weather/icons/openweathermap/{filename}.png"
 
 
 class OWMWeather(models.Model):

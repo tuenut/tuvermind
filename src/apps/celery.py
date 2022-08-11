@@ -4,9 +4,9 @@ import os
 
 from celery import Celery
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
-
 __all__ = ['app', ]
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 
 app = Celery('tuvermind', backend='redis')
 app.config_from_object('django.conf:settings', namespace='CELERY')

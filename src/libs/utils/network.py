@@ -1,5 +1,4 @@
 import requests
-
 import pprint
 
 pp = pprint.PrettyPrinter(indent=4, depth=10, width=128)
