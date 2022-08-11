@@ -1,8 +1,6 @@
-import os
-
 from .environment import DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
 
-__all__ = ["DATABASES", ]
+__all__ = ["DATABASES", "DEFAULT_AUTO_FIELD"]
 
 DATABASES = {
     'default': {
@@ -14,3 +12,4 @@ DATABASES = {
         'PORT': DB_PORT,
     }
 }
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

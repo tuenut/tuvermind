@@ -8,19 +8,20 @@ RUN  mkdir -p \
      /var/www/tuvermind/media \
      /var/www/tuvermind/static \
      /var/log/tuvermind/ \
-     /opt/tuvermind/ \
+     /opt/tuvermind/
 RUN chown tuvermind:tuvermind \
      /var/www/tuvermind/media \
      /var/www/tuvermind/static \
      /var/log/tuvermind/ \
-     /opt/tuvermind/ \
-
-COPY requirements.txt /tmp/requirements.txt
+     /opt/tuvermind/
 RUN apt-get update -y && \
     apt-get install build-essential libpq-dev -y
-RUN python3 -m pip install pip --upgrade && \
-    python3 -m pip install -r /tmp/requirements.txt
 
 USER tuvermind
+COPY requirements.txt /tmp/requirements.txt
+RUN python3 -m pip install pip --upgrade && \
+    python3 -m pip install -r /tmp/requirements.txt
+ENV PATH="/home/tuvermind/.local/bin:${PATH}"
+
 COPY ./src/ /opt/tuvermind/
 WORKDIR /opt/tuvermind/

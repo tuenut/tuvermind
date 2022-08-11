@@ -4,23 +4,25 @@ services:
   database:
     image: timescale/timescaledb:latest-pg12
     volumes:
-      - tuvermind-db:/var/lib/postgresql/data
+      - database:/var/lib/postgresql/data
+      - ./900_prepare_db_for_django_app.sh:/docker-entrypoint-initdb.d/900_prepare_db_for_django_app.sh
     expose:
       - 5432
     ports:
-      - "5433:5433"
+      - "18432:5432"
     env_file: .env
   redis:
     image: redis
     expose:
       - 6379
     ports:
-      - "127.0.0.1:16379:6379"
+      - "127.0.0.1:18379:6379"
   api:
     depends_on:
       - database
       - redis
     image: tuvermind
+    build: .
     expose:
       - 8000
     ports:
@@ -32,6 +34,7 @@ services:
       - media-files:/var/www/tuvermind/media
     env_file: .env
     entrypoint: uwsgi --ini uwsgi.ini
+#    entrypoint: "uwsgi --socket :8000 --module=apps.wsgi"
   #    celery:
   #        container_name: tuvermind-celery
   #        depends_on:
@@ -78,15 +81,22 @@ services:
       - api
     image: nginx
     ports:
-      - "127.0.0.1:80:80"
-      - "127.0.0.1:443:443"
+      - "127.0.0.1:18080:80"
+      - "127.0.0.1:18443:443"
     volumes:
       - ./tuvermind.nginx:/etc/nginx/conf.d/default.conf
       - ./etc/favicon.png:/var/www/tuvermind/favicon.png
       - static-files:/var/www/tuvermind/static
       - media-files:/var/www/tuvermind/media
+  pg_admin:
+    image: dpage/pgadmin4
+    depends_on:
+      - database
+    ports:
+      - "127.0.0.1:18051:80"
+    env_file: .env
 
 volumes:
-  tuvermind-db:
+  database:
   static-files:
   media-files:

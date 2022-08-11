@@ -1,6 +1,6 @@
 import os
 
-from src.settings.environment import API_KEY
+from .environment import API_KEY
 
 __all__ = [
     "URL_FORECAST_5_DAYS", "URL_CITY_LIST", "HOURS_TO_DISPLAY",
