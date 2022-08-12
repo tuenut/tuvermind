@@ -33,6 +33,7 @@ class OWMData(models.Model):
     snow_3h = models.FloatField(null=True, default=None)
     rain_3h = models.FloatField(null=True, default=None)
 
+    # TODO: should be `auto_now`
     updated = models.DateTimeField(null=True, default=None)
 
     @property
@@ -55,6 +56,18 @@ class OWMCities(models.Model):
     latitude = models.FloatField(null=True, default=None)
     country = models.CharField(null=True, default=None, max_length=2)
 
+    @classmethod
+    def create_new_city_from_owm_data(cls, city_data):
+        instance, _ = cls.objects.get_or_create(owm_id=city_data['id'])
+
+        instance.name = city_data['name']
+        instance.country = city_data['country']
+        instance.latitude = city_data['coord']['lat']
+        instance.longitude = city_data['coord']['lon']
+
+        instance.save()
+
+        return instance
 
 def weather_icon_path(instance, filename):
     return f"weather/icons/openweathermap/{filename}.png"

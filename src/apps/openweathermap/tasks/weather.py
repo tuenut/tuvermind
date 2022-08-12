@@ -6,76 +6,102 @@ from json import loads
 
 from celery import shared_task
 from django.utils import timezone
+from django.conf import settings
 
 from apps.openweathermap.models import OWMCities, OWMData, OWMWeather
-from apps.openweathermap.tasks.cities import Cities
 from libs.utils.network import GetDataByRequests
-from settings import URL_FORECAST_5_DAYS, URL_IMAGE_PREFIX
 
 
 @shared_task
 def get_weather_task():
-    Weather().get()
+    weather_getter = Weather()
+    data = weather_getter.get()
+    weather_getter.save(data)
 
 
 class Weather:
     getter = GetDataByRequests()
+    _now: dt
 
-    def get(self, ):
-        self.getter.get_data(URL_FORECAST_5_DAYS)
-        self.data = loads(self.getter.response.text)
-        self.save()
+    def get(self):
+        self.getter.get_data(settings.URL_FORECAST_5_DAYS)
+        return loads(self.getter.response.text)
 
-    def save(self, ):
-        # Get city instance or create if not exist.
+    def save(self, data):
+        self._now = timezone.now()
+        city = self._get_city(data)
+
+        for owm_response_data in data['list']:
+            self._save_weather(city, owm_response_data)
+
+    def _save_weather(self, city, data):
+        weather_data, _ = OWMData.objects.get_or_create(
+            timestamp=self._parse_timestamp(data),
+            city=city
+        )
+
+        self._set_weather_data(weather_data, data)
+        self._set_weather(weather_data, data['weather'][0])
+        self._set_precipitation(weather_data, data)
+
+        weather_data.save()
+
+    def _get_city(self, data: dict):
         try:
-            city = OWMCities.objects.get(owm_id=self.data['city']['id'])
+            city = OWMCities.objects.get(owm_id=data['city']['id'])
         except OWMCities.DoesNotExist:
-            Cities.save([self.data['city'], ])
-            city = OWMCities.objects.get(owm_id=self.data['city']['id'])
+            city = OWMCities.create_new_city_from_owm_data(data['city'])
 
-        for item in self.data['list']:
-            weather = item['weather'][0]
-            timestamp = timezone.make_aware(dt.utcfromtimestamp(item['dt']))
-            instance, created = OWMData.objects.get_or_create(
-                timestamp=timestamp, city=city)
-            instance.updated = timezone.now()
+        return city
 
-            instance.temperature = item['main']['temp']
-            instance.temperature_min = item['main']['temp_min']
-            instance.temperature_max = item['main']['temp_max']
-            instance.pressure = item['main']['pressure']
-            instance.humidity = item['main']['humidity']
+    def _set_weather_data(self, weather_data: OWMData, response_data: dict):
+        weather_data.updated = self._now
+        weather_data.temperature = response_data['main']['temp']
+        weather_data.temperature_min = response_data['main']['temp_min']
+        weather_data.temperature_max = response_data['main']['temp_max']
+        weather_data.pressure = response_data['main']['pressure']
+        weather_data.humidity = response_data['main']['humidity']
+        weather_data.clouds = response_data['clouds']['all']
+        weather_data.wind_speed = response_data['wind']['speed']
+        weather_data.wind_deg = response_data['wind']['deg']
 
-            # Get weather instance or create if not exist.
-            try:
-                instance.weather = OWMWeather.objects.get(owm_id=weather['id'])
-            except OWMWeather.DoesNotExist:
-                weather_instance, created = OWMWeather.objects.get_or_create(
-                    owm_id=weather['id'],
-                    name=weather['main'],
-                    description=weather['description'],
-                )
+    def _parse_timestamp(self, response_data: dict):
+        timestamp = response_data['dt']
+        timestamp = dt.utcfromtimestamp(timestamp)
+        return timezone.make_aware(timestamp)
 
-                if not weather_instance.icon:
-                    # Download icon.
-                    self.getter.get_data(URL_IMAGE_PREFIX % weather['icon'])
-                    icon_file = BytesIO(self.getter.response.content)
+    def _set_precipitation(self, weather_data: OWMData, response_data: dict):
+        try:
+            weather_data.snow_3h = response_data['snow']['3h']
+        except KeyError:
+            weather_data.snow_3h = None
+        try:
+            weather_data.rain_3h = response_data['rain']['3h']
+        except KeyError:
+            weather_data.rain_3h = None
 
-                    weather_instance.icon.save(weather['icon'], icon_file)
-                    weather_instance.save()
+    def _set_weather(self, weather_data: OWMData, response_data: dict):
+        try:
+            weather_data.weather = OWMWeather.objects.get(
+                owm_id=response_data['id'])
+        except OWMWeather.DoesNotExist:
+            self._create_new_weather(response_data)
 
-            instance.clouds = item['clouds']['all']
-            instance.wind_speed = item['wind']['speed']
-            instance.wind_deg = item['wind']['deg']
+    def _create_new_weather(self, weather):
+        weather_instance, created = OWMWeather.objects.get_or_create(
+            owm_id=weather['id'],
+            name=weather['main'],
+            description=weather['description'],
+        )
 
-            try:
-                instance.snow_3h = item['snow']['3h']
-            except KeyError:
-                instance.snow_3h = None
-            try:
-                instance.rain_3h = item['rain']['3h']
-            except KeyError:
-                instance.rain_3h = None
+        if not weather_instance.icon:
+            icon_file = self._get_weather_icon(weather["icon"])
+            self._attach_icon(weather_instance, weather["icon"], icon_file)
 
-            instance.save()
+    def _get_weather_icon(self, icon):
+        self.getter.get_data(settings.URL_IMAGE_PREFIX % icon)
+        return BytesIO(self.getter.response.content)
+
+    def _attach_icon(self, weather_instance, icon, file):
+        weather_instance.icon.save(icon, file)
+        weather_instance.save()

@@ -12,7 +12,9 @@ from libs.utils.network import GetDataByRequests
 
 @shared_task
 def get_cities_task():
-    Cities().get()
+    cities_getter = Cities()
+    data = cities_getter.get()
+    cities_getter.save(data)
 
 
 class Cities:
@@ -20,16 +22,9 @@ class Cities:
 
     def get(self, ):
         self.getter.get_data(settings.URL_CITY_LIST)
-        self.data = loads(gzip.decompress(self.getter.response.content))
-        self.save(self.data)
+        return loads(gzip.decompress(self.getter.response.content))
 
     @staticmethod
     def save(data, ):
         for city in data:
-            instance, created = OWMCities.objects \
-                .get_or_create(owm_id=city['id'])
-            instance.name = city['name']
-            instance.country = city['country']
-            instance.latitude = city['coord']['lat']
-            instance.longitude = city['coord']['lon']
-            instance.save()
+            OWMCities.create_new_city_from_owm_data(city)

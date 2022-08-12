@@ -1,7 +1,7 @@
 import requests
-import pprint
+from logging import getLogger
 
-pp = pprint.PrettyPrinter(indent=4, depth=10, width=128)
+logger = getLogger(__name__)
 
 
 class GetDataByRequests:
@@ -35,32 +35,32 @@ class GetDataByRequests:
     def get_data(self, url, user_agent=None):
         self.response = None
 
-        user_agent = user_agent if user_agent else self.USER_AGENT
-        headers = {'User-Agent': user_agent}
-
         try:
-            self.response = requests.get(url, headers=headers, timeout=5, )
+            self.response = self._perform_request(url)
         except Exception as e:
-            exc_info = e.__reduce__()
-            # self.logger.debug('Can not direct connect to <%s>\n<%s> <%s>', url, exc_info[0], exc_info[1])
+            logger.exception(f'Can not direct connect to <{url}>')
             if self.proxies_list:
-                for proxy in self.proxies_list:
-                    try:
-                        self.response = requests.get(url, headers=headers, timeout=5, proxies=proxy)
-                    except:
-                        # self.logger.debug(
-                        #     'Can not through proxy connect to <%s>\n<%s> <%s>',
-                        #     url, exc_info[0], exc_info[1]
-                        # )
-                        pass
-                    else:
-                        break
+                self._request_through_proxy(url)
 
-        if self.response:
-            return self.response
-        else:
-            return False
+        return self.response
+
+    def _request_through_proxy(self, url):
+        for proxy in self.proxies_list:
+            try:
+                self.response = self._perform_request(url, proxy)
+            except:
+                logger.exception(f'Can not through proxy connect to <{url}>.')
+            else:
+                break
+
+    def _perform_request(self, url, proxies=None):
+        return requests.get(url, headers=self.headers, timeout=5,
+                            proxies=proxies)
+
+    @property
+    def headers(self):
+        return {'User-Agent': self.USER_AGENT}
 
     def log_data(self):
-        # self.logger.info(pp.pformat(self.response))
+        logger.info(f"Get response: <{self.response}>")
         pass
