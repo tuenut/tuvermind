@@ -1,4 +1,5 @@
 uwsgi
+loguru
 
 django==3.2.*
 djangorestframework==3.13.*
@@ -16,5 +17,4 @@ redis==4.2.*
 psycopg2-binary==2.9.*
 
 django-debug-toolbar
-dj_loguru
-loguru
+ipython

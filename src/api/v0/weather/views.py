@@ -1,3 +1,5 @@
+from loguru import logger
+
 from rest_framework import viewsets
 
 from apps.openweathermap.models import OWMWeather, OWMData
@@ -12,6 +14,10 @@ class WeatherViewSet(viewsets.ReadOnlyModelViewSet):
     }
     ordering = ['-timestamp']
     ordering_fields = ['timestamp']
+
+    def list(self, request, *args, **kwargs):
+        logger.info("Test message.")
+        return  super().list(request, *args, **kwargs)
 
 
 class WeatherTypesViewSet(viewsets.ReadOnlyModelViewSet):

@@ -18,10 +18,11 @@ RUN apt-get update -y && \
     apt-get install build-essential libpq-dev -y
 
 USER tuvermind
+ENV PATH="/home/tuvermind/.local/bin:${PATH}"
+
 COPY requirements.txt /tmp/requirements.txt
 RUN python3 -m pip install pip --upgrade && \
     python3 -m pip install -r /tmp/requirements.txt
-ENV PATH="/home/tuvermind/.local/bin:${PATH}"
 
 COPY ./src/ /opt/tuvermind/
 WORKDIR /opt/tuvermind/
