@@ -28,5 +28,5 @@ docker-compose up -d
 # apply django migrations
 docker-compose exec api python3 manage.py migrate
 # collect project static files
-docker-compose exec api python3 manage.py collectstatic
+docker-compose exec api python3 manage.py collectstatic --no-input
 ```
