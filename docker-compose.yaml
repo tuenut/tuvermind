@@ -34,17 +34,16 @@ services:
       - media-files:/var/www/tuvermind/media
     env_file: .env
     entrypoint: uwsgi --ini uwsgi.ini
-#    entrypoint: "uwsgi --socket :8000 --module=apps.wsgi"
-  #    celery:
-  #        container_name: tuvermind-celery
-  #        depends_on:
-  #            - database
-  #            - redis
-  #        image: tuvermind
-  #        volumes:
-  #            - ../../:/tuvermind/
-  #            - tuvermind-celery-logs:/tuvermind/.logs/
-  #        entrypoint: sh ./etc/start_celery.sh
+  celery:
+      depends_on:
+          - database
+          - redis
+      image: tuvermind
+      volumes:
+        - ./src:/opt/tuvermind/
+        - .logs/:/var/log/tuvermind/
+      env_file: .env
+      entrypoint: celery -A apps.celery:app worker  -l DEBUG
   #    celery-beat:
   #        container_name: tuvermind-celerybeat
   #        depends_on:
