@@ -1,8 +1,8 @@
 import logging
 
-from .paths import LOG_DIR
 
+__all__ = ["LOG_LEVEL", "LOGGING_CONFIG"]
 
-__all__ = ["LOG_LEVEL"]
+LOGGING_CONFIG = None
 
 LOG_LEVEL = logging.DEBUG

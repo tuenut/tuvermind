@@ -29,7 +29,6 @@ services:
       - "127.0.0.1:18000:8000"
     volumes:
       - ./src:/opt/tuvermind/
-      - .logs/:/var/log/tuvermind/
       - static-files:/var/www/tuvermind/static
       - media-files:/var/www/tuvermind/media
     env_file: .env
@@ -41,7 +40,6 @@ services:
       image: tuvermind
       volumes:
         - ./src:/opt/tuvermind/
-        - .logs/:/var/log/tuvermind/
       env_file: .env
       entrypoint: celery -A apps.celery:app worker  -l DEBUG
   #    celery-beat:
