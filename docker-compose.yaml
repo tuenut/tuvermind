@@ -34,45 +34,44 @@ services:
     env_file: .env
     entrypoint: uwsgi --ini uwsgi.ini
   celery:
-      depends_on:
-          - database
-          - redis
-      image: tuvermind
-      volumes:
-        - ./src:/opt/tuvermind/
-      env_file: .env
-      entrypoint: celery -A apps.celery:app worker  -l DEBUG
-  #    celery-beat:
-  #        container_name: tuvermind-celerybeat
-  #        depends_on:
-  #            - database
-  #            - redis
-  #        image: tuvermind
-  #        volumes:
-  #            - ../../:/tuvermind/
-  #            - tuvermind-celery-logs:/tuvermind/.logs/
-  #        entrypoint: sh ./etc/start_celerybeat.sh
-  #        spa:
-  #            depends_on:
-  #                - webserver
-  #            image: tuvermind-spa
-  #            build:
-  #                target: development
-  #            expose:
-  #                - 3000
-  #            volumes:
-  #                - ../tuvermind_react_spa_ui/:./
-  #            entrypoint: ["npm", "run", "start"]
-  #    jupyter:
-  #        container_name: tuvermind-jupyter
-  #        depends_on:
-  #            - database
-  #            - redis
-  #        image: tuvermind
-  #        volumes:
-  #            - ./:/tuvermind/
-  #            - tuvermind-jupyter-logs:/tuvermind/.logs/
-  #        entrypoint: python3 manage.py shell_plus --notebook
+    depends_on:
+      - database
+      - redis
+      - fluentd
+    image: tuvermind
+    volumes:
+      - ./src:/opt/tuvermind/
+    env_file: .env
+    entrypoint: celery -A apps.celery:app worker  -l DEBUG
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: fluentd
+        tag: tuvermind.celery
+  fluentd:
+    image: fluent/fluentd
+    expose:
+      - 24224
+    ports:
+      - "127.0.0.1:24224:24224"
+    volumes:
+      - ./tuvermind-fluentd.conf:/fluentd/etc/tuvermind-fluentd.conf
+    environment:
+      FLUENTD_CONF: tuvermind-fluentd.conf
+  elasticsearch:
+    image: elasticsearch:6.8.23
+    expose:
+      - 9200
+      - 9300
+    environment:
+      # Password for the 'elastic' user (at least 6 characters)
+      ELASTIC_PASSWORD: elastic
+      # Password for the 'kibana_system' user (at least 6 characters)
+      KIBANA_PASSWORD: kibana
+      LICENSE: basic
+      ES_PORT: 9200
+      KIBANA_PORT: 5601
+      MEM_LIMIT: 1073741824
   nginx:
     depends_on:
       - api
