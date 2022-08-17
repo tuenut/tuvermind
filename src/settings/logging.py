@@ -62,6 +62,5 @@ logger.configure(
         api_handler_config,
         celery_handler_config,
         fallback_handler_config
-    ],
-    extra={"special_fluentd_tag": True}
+    ]
 )

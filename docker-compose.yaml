@@ -11,12 +11,18 @@ services:
     ports:
       - "18432:5432"
     env_file: .env
+    networks:
+      default:
+        ipv4_address: 172.19.0.10
   redis:
     image: redis
     expose:
       - 6379
     ports:
       - "127.0.0.1:18379:6379"
+    networks:
+      default:
+        ipv4_address: 172.19.0.20
   api:
     depends_on:
       - database
@@ -33,33 +39,37 @@ services:
       - media-files:/var/www/tuvermind/media
     env_file: .env
     entrypoint: uwsgi --ini uwsgi.ini
+    networks:
+      default:
+        ipv4_address: 172.19.0.30
   celery:
     depends_on:
       - database
       - redis
-      - fluentd
+      - logstash
     image: tuvermind
     volumes:
       - ./src:/opt/tuvermind/
     env_file: .env
     entrypoint: celery -A apps.celery:app worker  -l DEBUG
     logging:
-      driver: fluentd
+      driver: syslog
       options:
-        fluentd-address: fluentd
-        tag: tuvermind.celery
-  fluentd:
-    image: fluent/fluentd
+        syslog-address: tcp://172.19.0.50:5000
+    networks:
+      default:
+        ipv4_address: 172.19.0.40
+  logstash:
+    image: logstash:7.17.5
     expose:
-      - 24224
-    ports:
-      - "127.0.0.1:24224:24224"
+      - 5000
     volumes:
-      - ./tuvermind-fluentd.conf:/fluentd/etc/tuvermind-fluentd.conf
-    environment:
-      FLUENTD_CONF: tuvermind-fluentd.conf
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    networks:
+      default:
+        ipv4_address: 172.19.0.50
   elasticsearch:
-    image: elasticsearch:6.8.23
+    image: elasticsearch:7.17.5
     expose:
       - 9200
       - 9300
@@ -74,6 +84,7 @@ services:
       ES_PORT: 9200
       KIBANA_PORT: 5601
       MEM_LIMIT: 1073741824
+      discovery.type: single-node
   kibana:
     image: kibana:6.8.23
     expose:
@@ -99,8 +110,20 @@ services:
     ports:
       - "127.0.0.1:18051:80"
     env_file: .env
+    networks:
+      default:
+        ipv4_address: 172.19.0.11
 
 volumes:
   database:
   static-files:
   media-files:
+
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.1/16
