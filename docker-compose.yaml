@@ -39,6 +39,10 @@ services:
       - media-files:/var/www/tuvermind/media
     env_file: .env
     entrypoint: uwsgi --ini uwsgi.ini
+    logging:
+      driver: syslog
+      options:
+        syslog-address: tcp://172.19.0.50:5001
     networks:
       default:
         ipv4_address: 172.19.0.30
@@ -63,6 +67,7 @@ services:
     image: logstash:7.17.5
     expose:
       - 5000
+      - 5001
     volumes:
       - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     networks:
