@@ -37,7 +37,6 @@ api_handler_config = dict(
     level=LOG_LEVEL,
     format=api_logs_format,
     backtrace=False,
-    serialize=True,
     filter=api_logs_filter
 )
 celery_handler_config = dict(
@@ -45,7 +44,6 @@ celery_handler_config = dict(
     level=LOG_LEVEL,
     format=celery_logs_format,
     backtrace=False,
-    serialize=True,
     filter=celery_logs_filter
 )
 fallback_handler_config = dict(
@@ -53,7 +51,6 @@ fallback_handler_config = dict(
     level=LOG_LEVEL,
     format=fallback_logs_format,
     backtrace=False,
-    serialize=True,
     filter=fallback_logs_filter
 )
 

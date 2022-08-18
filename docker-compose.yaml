@@ -11,18 +11,19 @@ services:
     ports:
       - "18432:5432"
     env_file: .env
-    networks:
-      default:
-        ipv4_address: 172.19.0.10
+  pg_admin:
+    image: dpage/pgadmin4
+    depends_on:
+      - database
+    ports:
+      - "127.0.0.1:18051:80"
+    env_file: .env
   redis:
     image: redis
     expose:
       - 6379
     ports:
       - "127.0.0.1:18379:6379"
-    networks:
-      default:
-        ipv4_address: 172.19.0.20
   api:
     depends_on:
       - database
@@ -39,63 +40,15 @@ services:
       - media-files:/var/www/tuvermind/media
     env_file: .env
     entrypoint: uwsgi --ini uwsgi.ini
-    logging:
-      driver: syslog
-      options:
-        syslog-address: tcp://172.19.0.50:5001
-    networks:
-      default:
-        ipv4_address: 172.19.0.30
   celery:
     depends_on:
       - database
       - redis
-      - logstash
     image: tuvermind
     volumes:
       - ./src:/opt/tuvermind/
     env_file: .env
     entrypoint: celery -A apps.celery:app worker  -l DEBUG
-    logging:
-      driver: syslog
-      options:
-        syslog-address: tcp://172.19.0.50:5000
-    networks:
-      default:
-        ipv4_address: 172.19.0.40
-  logstash:
-    image: logstash:7.17.5
-    expose:
-      - 5000
-      - 5001
-    volumes:
-      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-    networks:
-      default:
-        ipv4_address: 172.19.0.50
-  elasticsearch:
-    image: elasticsearch:7.17.5
-    expose:
-      - 9200
-      - 9300
-    ports:
-      - "127.0.0.1:9200:9200"
-    environment:
-      # Password for the 'elastic' user (at least 6 characters)
-      ELASTIC_PASSWORD: elastic
-      # Password for the 'kibana_system' user (at least 6 characters)
-      KIBANA_PASSWORD: kibana
-      LICENSE: basic
-      ES_PORT: 9200
-      KIBANA_PORT: 5601
-      MEM_LIMIT: 1073741824
-      discovery.type: single-node
-  kibana:
-    image: kibana:7.17.5
-    expose:
-      - 5601
-    ports:
-      - "127.0.0.1:5601:5601"
   nginx:
     depends_on:
       - api
@@ -108,27 +61,8 @@ services:
       - ./etc/favicon.png:/var/www/tuvermind/favicon.png
       - static-files:/var/www/tuvermind/static
       - media-files:/var/www/tuvermind/media
-  pg_admin:
-    image: dpage/pgadmin4
-    depends_on:
-      - database
-    ports:
-      - "127.0.0.1:18051:80"
-    env_file: .env
-    networks:
-      default:
-        ipv4_address: 172.19.0.11
 
 volumes:
   database:
   static-files:
   media-files:
-
-
-networks:
-  default:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.19.0.1/16
