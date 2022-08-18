@@ -91,7 +91,7 @@ services:
       MEM_LIMIT: 1073741824
       discovery.type: single-node
   kibana:
-    image: kibana:6.8.23
+    image: kibana:7.17.5
     expose:
       - 5601
     ports:
