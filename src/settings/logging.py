@@ -1,28 +1,15 @@
 import sys
-from typing import Union
 
 from loguru import logger
 
+from libs.utils.logging import not_any_of
 from .environment import DEBUG
+
 
 __all__ = ["LOGGING_CONFIG", "LOG_LEVEL"]
 
 LOGGING_CONFIG = None
 LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
-
-
-def combine_with(modifier: Union[all, any], inverse=False):
-    def combine_filters(*filters):
-        def combined_filter(record):
-            result = modifier([fn(record) for fn in filters])
-            return not result if inverse else result
-
-        return combined_filter
-
-    return combine_filters
-
-
-not_any_of = combine_with(any, inverse=True)
 
 api_logs_filter = lambda record: "request_id" in record["extra"]
 celery_logs_filter = lambda record: "task_id" in record["extra"]
@@ -36,21 +23,21 @@ api_handler_config = dict(
     sink=sys.stderr,
     level=LOG_LEVEL,
     format=api_logs_format,
-    backtrace=False,
+    backtrace=True,
     filter=api_logs_filter
 )
 celery_handler_config = dict(
     sink=sys.stderr,
     level=LOG_LEVEL,
     format=celery_logs_format,
-    backtrace=False,
+    backtrace=True,
     filter=celery_logs_filter
 )
 fallback_handler_config = dict(
     sink=sys.stderr,
     level=LOG_LEVEL,
     format=fallback_logs_format,
-    backtrace=False,
+    backtrace=True,
     filter=fallback_logs_filter
 )
 
