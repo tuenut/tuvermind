@@ -48,7 +48,7 @@ services:
     volumes:
       - ./src:/opt/tuvermind/
     env_file: .env
-    entrypoint: celery -A apps.celery:app worker  -l DEBUG
+    entrypoint: celery -A apps.celery:app worker
   nginx:
     depends_on:
       - api

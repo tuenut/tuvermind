@@ -6,9 +6,10 @@ from libs.utils.logging import not_any_of
 from .environment import DEBUG
 
 
-__all__ = ["LOGGING_CONFIG", "LOG_LEVEL"]
+__all__ = ["LOGGING_CONFIG", "LOG_LEVEL", "LOGGING"]
 
 LOGGING_CONFIG = None
+LOGGING = {}
 LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
 
 api_logs_filter = lambda record: "request_id" in record["extra"]

@@ -17,5 +17,4 @@ pillow==9.1.*
 redis==4.2.*
 psycopg2-binary==2.9.*
 
-django-debug-toolbar
 ipython
