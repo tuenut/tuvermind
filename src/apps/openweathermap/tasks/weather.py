@@ -100,8 +100,8 @@ class Weather:
             self._attach_icon(weather_instance, weather["icon"], icon_file)
 
     def _get_weather_icon(self, icon):
-        self.getter.get_data(settings.URL_IMAGE_PREFIX % icon)
-        return BytesIO(self.getter.response.content)
+        response = self.getter.get_data(settings.URL_IMAGE_PREFIX % icon)
+        return BytesIO(response.content)
 
     def _attach_icon(self, weather_instance, icon, file):
         weather_instance.icon.save(icon, file)
