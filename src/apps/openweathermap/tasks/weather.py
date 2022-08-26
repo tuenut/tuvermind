@@ -9,10 +9,11 @@ from django.utils import timezone
 from django.conf import settings
 
 from apps.openweathermap.models import OWMCities, OWMData, OWMWeather
+from libs.tasks.bases import LoggedTask
 from libs.utils.network import GetDataByRequests
 
 
-@shared_task
+@shared_task(base=LoggedTask)
 def get_weather_task():
     weather_getter = Weather()
     data = weather_getter.get()
@@ -24,8 +25,8 @@ class Weather:
     _now: dt
 
     def get(self):
-        self.getter.get_data(settings.URL_FORECAST_5_DAYS)
-        return loads(self.getter.response.text)
+        response = self.getter.get_data(settings.URL_FORECAST_5_DAYS)
+        return loads(response.text)
 
     def save(self, data):
         self._now = timezone.now()
@@ -50,7 +51,7 @@ class Weather:
         try:
             city = OWMCities.objects.get(owm_id=data['city']['id'])
         except OWMCities.DoesNotExist:
-            city = OWMCities.create_new_city_from_owm_data(data['city'])
+            city = OWMCities.update_city_data(data['city'])
 
         return city
 

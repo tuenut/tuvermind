@@ -1,3 +1,5 @@
+from loguru import logger
+
 from django.db import models
 
 from libs.utils.djangomodelutils import OverwriteStorage
@@ -57,8 +59,14 @@ class OWMCities(models.Model):
     country = models.CharField(null=True, default=None, max_length=2)
 
     @classmethod
-    def create_new_city_from_owm_data(cls, city_data):
+    def update_city_data(cls, city_data):
+        logger.debug(f"Start creating city data in db with input <{city_data}>.")
         instance, _ = cls.objects.get_or_create(owm_id=city_data['id'])
+
+        logger.debug(
+            f"City with owm_id <{instance.owm_id}> " +
+            ("was created." if _ else "was found in db.")
+        )
 
         instance.name = city_data['name']
         instance.country = city_data['country']
@@ -67,7 +75,10 @@ class OWMCities(models.Model):
 
         instance.save()
 
+        logger.debug("New city data saved in db.")
+
         return instance
+
 
 def weather_icon_path(instance, filename):
     return f"weather/icons/openweathermap/{filename}.png"

@@ -3,28 +3,30 @@ from __future__ import absolute_import, unicode_literals
 import gzip
 from json import loads
 
+from loguru import logger
+
 from celery import shared_task
 from django.conf import settings
 
 from apps.openweathermap.models import OWMCities
+from libs.tasks.bases import LoggedTask
 from libs.utils.network import GetDataByRequests
 
 
-@shared_task
+@shared_task(base=LoggedTask, name="Get OWM cities")
 def get_cities_task():
-    cities_getter = Cities()
-    data = cities_getter.get()
-    cities_getter.save(data)
-
-
-class Cities:
     getter = GetDataByRequests()
 
-    def get(self, ):
-        self.getter.get_data(settings.URL_CITY_LIST)
-        return loads(gzip.decompress(self.getter.response.content))
+    logger.debug(f"Start getting data from OWM...")
+    response = getter.get_data(settings.URL_CITY_LIST)
+    logger.debug(f"Ok.")
 
-    @staticmethod
-    def save(data, ):
-        for city in data:
-            OWMCities.create_new_city_from_owm_data(city)
+    logger.debug(f"Decompressing data...")
+    data = loads(gzip.decompress(response.content))
+    logger.debug("Ok.")
+
+    logger.debug(f"Start saving data to db...")
+    for city in data:
+        OWMCities.update_city_data(city)
+
+    logger.debug(f"All data saved.")
