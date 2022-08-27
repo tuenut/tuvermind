@@ -5,12 +5,48 @@ from loguru import logger
 from libs.utils.logging import not_any_of
 from .environment import DEBUG
 
+__all__ = ["LOG_LEVEL"]
 
-__all__ = ["LOGGING_CONFIG", "LOG_LEVEL", "LOGGING"]
-
-LOGGING_CONFIG = None
-LOGGING = {}
 LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
+
+LOGGING = {
+    "version": 1,
+    'disable_existing_loggers': True,
+    "handlers": {
+        "loguru": {
+            "level": LOG_LEVEL,
+            "class": "libs.logging.handlers.InterceptHandler"
+        }
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["loguru"],
+            "level": "INFO",
+        },
+        "django.server": {
+            "handlers": ["loguru"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    }
+}
+
+
+# LOGGING_CONFIG = None
+
+
+def combine_with(modifier: Union[all, any], inverse=False):
+    def combine_filters(*filters):
+        def combined_filter(record):
+            result = modifier([fn(record) for fn in filters])
+            return not result if inverse else result
+
+        return combined_filter
+
+    return combine_filters
+
+
+not_any_of = combine_with(any, inverse=True)
 
 api_logs_filter = lambda record: "request_id" in record["extra"]
 celery_logs_filter = lambda record: "task_id" in record["extra"]
