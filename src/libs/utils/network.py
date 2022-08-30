@@ -1,6 +1,7 @@
 import requests
 
 from loguru import logger
+from pprint import pformat
 
 
 class GetDataByRequests:
@@ -26,6 +27,12 @@ class GetDataByRequests:
             return None
 
         logger.debug(f"Response headers: <{response.headers}>.")
+        logger.debug(f"Response is <{response}>")
+        try:
+            if len(response.content) < 1024:
+                logger.debug(f"Response content: \n{pformat(response.content)}")
+        except:
+            pass
 
         return response
 

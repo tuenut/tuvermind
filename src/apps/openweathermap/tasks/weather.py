@@ -1,5 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
+from loguru import logger
+from pprint import pformat
+
 from datetime import datetime as dt
 from io import BytesIO
 from json import loads
@@ -31,21 +34,10 @@ class Weather:
     def save(self, data):
         self._now = timezone.now()
         city = self._get_city(data)
+        logger.debug(f"Get data for city <{city}>.")
 
         for owm_response_data in data['list']:
             self._save_weather(city, owm_response_data)
-
-    def _save_weather(self, city, data):
-        weather_data, _ = OWMData.objects.get_or_create(
-            timestamp=self._parse_timestamp(data),
-            city=city
-        )
-
-        self._set_weather_data(weather_data, data)
-        self._set_weather(weather_data, data['weather'][0])
-        self._set_precipitation(weather_data, data)
-
-        weather_data.save()
 
     def _get_city(self, data: dict):
         try:
@@ -54,6 +46,21 @@ class Weather:
             city = OWMCities.update_city_data(data['city'])
 
         return city
+
+    def _save_weather(self, city, data):
+        weather_data, _ = OWMData.objects.get_or_create(
+            timestamp=self._parse_timestamp(data),
+            city=city
+        )
+
+        logger.debug(f"Saving weather data: <{pformat(data)}>.")
+
+        self._set_weather_data(weather_data, data)
+        self._set_weather(weather_data, data['weather'][0])
+        self._set_precipitation(weather_data, data)
+
+        weather_data.save()
+        logger.debug(f"Data saved into <{weather_data}>.")
 
     def _set_weather_data(self, weather_data: OWMData, response_data: dict):
         weather_data.updated = self._now
