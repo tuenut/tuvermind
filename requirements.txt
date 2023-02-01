@@ -1,5 +1,6 @@
 uwsgi
 loguru
+pydantic
 
 django==3.2.*
 djangorestframework==3.13.*

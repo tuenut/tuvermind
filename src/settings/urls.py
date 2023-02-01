@@ -20,7 +20,7 @@ from django.views.generic import RedirectView
 from django.conf.urls import url, include
 from django.conf.urls.static import static
 
-import settings.paths
+from .django import MEDIA_ROOT, MEDIA_URL
 from api import urls as api_urls
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -40,4 +40,4 @@ urlpatterns = [
     admin_path,
     api_path,
 ]
-urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.paths.MEDIA_ROOT))
+urlpatterns.extend(static(MEDIA_URL, document_root=MEDIA_ROOT))

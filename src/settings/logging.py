@@ -2,8 +2,12 @@ import sys
 
 from loguru import logger
 
-from libs.logging.loguru_configuration import has_extra_key, HandlerConfig, \
-    LoguruHandlersConfig, not_any_of
+from libs.logging.loguru_configuration import (
+    has_extra_key,
+    HandlerConfig,
+    LoguruHandlersConfig,
+    not_any_of,
+)
 from .environment import DEBUG
 
 
@@ -13,11 +17,11 @@ LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
 
 LOGGING = {
     "version": 1,
-    'disable_existing_loggers': True,
+    "disable_existing_loggers": False,
     "handlers": {
         "loguru": {
             "level": LOG_LEVEL,
-            "class": "libs.logging.handlers.InterceptHandler"
+            "class": "libs.logging.handlers.InterceptHandler",
         }
     },
     "loggers": {
@@ -30,8 +34,12 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
-    }
+    },
 }
+
+LOG_REQUEST_ID_HEADER = "HTTP_X_REQUEST_ID"
+GENERATE_REQUEST_ID_IF_NOT_IN_HEADER = True
+REQUEST_ID_RESPONSE_HEADER = "REQUEST_ID"
 
 
 class Configuration(LoguruHandlersConfig):
@@ -41,18 +49,18 @@ class Configuration(LoguruHandlersConfig):
 
     api_default = HandlerConfig(
         format="{time} | {level} | {extra[request_id]} | {message}",
-        filter=has_extra_key("request_id")
+        filter=has_extra_key("request_id"),
     )
     celery_default = HandlerConfig(
         format="{time} | {level} | {extra[task_id]} | {message}",
-        filter=has_extra_key("task_id")
+        filter=has_extra_key("task_id"),
     )
     fallback_default = HandlerConfig(
         format="{time} | {level} | {message}",
-        filter=not_any_of(has_extra_key("request_id"), has_extra_key("task_id"))
+        filter=not_any_of(
+            has_extra_key("request_id"), has_extra_key("task_id")
+        ),
     )
 
 
-logger.configure(
-    handlers=Configuration().get_handlers_config()
-)
+logger.configure(handlers=Configuration().get_handlers_config())
